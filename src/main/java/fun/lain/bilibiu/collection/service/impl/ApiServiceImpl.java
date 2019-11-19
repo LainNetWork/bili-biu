@@ -3,14 +3,12 @@ package fun.lain.bilibiu.collection.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
-import fun.lain.bilibiu.collection.entity.BiliUserInfo;
-import fun.lain.bilibiu.collection.entity.CollectionMedia;
-import fun.lain.bilibiu.collection.entity.MediaPart;
-import fun.lain.bilibiu.collection.entity.UserCollection;
+import fun.lain.bilibiu.collection.entity.*;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.var.ApiVar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -110,16 +108,19 @@ public class ApiServiceImpl implements ApiService {
         return reList;
     }
 
-    @Override
-    public List<CollectionMedia> getAllMediaInCollection(Long id) {
-        return getAllMediaInCollection(id,null);
-    }
+//    @Override
+//    public List<CollectionMedia> getAllMediaInCollection(Long id) {
+//        return getAllMediaInCollection(id,null);
+//    }
 
     @Override
     public CollectionMedia getMediaInfo(Long id,String cookies) {
         CollectionMedia media = new CollectionMedia();
         media.setId(id);
-        getDownloadInfo(media,cookies);
+        getCidInfo(media,cookies);
+        for(MediaPart part: media.getParts()){
+            getDownloadInfo(part,cookies);
+        }
         return media;
     }
 
@@ -128,13 +129,17 @@ public class ApiServiceImpl implements ApiService {
         //获取av号中的视频分段的cid
         if(CollectionUtils.isNotEmpty(medias)){
             for(CollectionMedia media :medias){
-                getDownloadInfo(media,cookies);
+                getCidInfo(media,cookies);
             }
         }
     }
 
-
-    private void getDownloadInfo(CollectionMedia media,String cookies) {
+    /**
+     * 获取Cid信息
+     * @param media
+     * @param cookies
+     */
+    private void getCidInfo(CollectionMedia media,String cookies) {
         HttpEntity req = getRequestEntity(cookies);
         ResponseEntity<JSONObject> cidInfoJson = restTemplate.exchange(ApiVar.MEDIA_PLAY_LIST,HttpMethod.GET,req,JSONObject.class,media.getId());
         //校验
@@ -146,7 +151,7 @@ public class ApiServiceImpl implements ApiService {
         List<MediaPart> mediaParts = array.toJavaList(MediaPart.class);
         mediaParts.forEach(part->{
             part.setId(media.getId());
-            getDownloadInfo(part,cookies);
+//            getDownloadInfo(part,cookies);
         });
         media.setParts(mediaParts);
     }
@@ -157,11 +162,34 @@ public class ApiServiceImpl implements ApiService {
             ResponseEntity<JSONObject> res = restTemplate.exchange(ApiVar.MEDIA_DOWNLOAD_INFO,HttpMethod.GET,req,JSONObject.class,part.getId(),part.getCid(),112);
             JSONObject data = res.getBody();
             if(res.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
-                throw new RuntimeException("接口请求异常！");
+                throw new RuntimeException(" ！");
             }
-            System.out.println(res.getBody());
+            MediaPart tempPart = JSONObject.toJavaObject(data.getJSONObject("data"),MediaPart.class);
+            part.setAcceptQuality(tempPart.getAcceptQuality());
+            part.setDownLoadInfos(tempPart.getDownLoadInfos());
+            part.setPartName(tempPart.getPartName());
+            part.setQualityLevel(tempPart.getQualityLevel());
+            part.setQualityName(tempPart.getQualityName());
+
         }else{
             //TODO 抛出异常
         }
+    }
+
+    @Override
+    public MediaPart getDownloadInfo(Long id,Long cid, String cookie) {
+        if(id !=null &&cid!=null){
+            HttpEntity req = getRequestEntity(cookie);
+            ResponseEntity<JSONObject> res = restTemplate.exchange(ApiVar.MEDIA_DOWNLOAD_INFO,HttpMethod.GET,req,JSONObject.class,id,cid,112);
+            JSONObject data = res.getBody();
+            if(res.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
+                throw new RuntimeException(" ！");
+            }
+            MediaPart tempPart = JSONObject.toJavaObject(data.getJSONObject("data"),MediaPart.class);
+            return  tempPart;
+        }else{
+            //TODO 抛出异常
+        }
+        return null;
     }
 }

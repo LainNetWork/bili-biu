@@ -15,9 +15,8 @@ public class SaveServiceImpl implements SaveService {
     private String path;
 
 
-
     @Override
-    public void saveToLocal(String url) {
+    public void saveToLocal(String url, Long taskId) {
 
     }
 }

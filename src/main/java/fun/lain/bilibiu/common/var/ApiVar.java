@@ -15,6 +15,8 @@ public interface ApiVar {
     //根据av号获取playList
     String MEDIA_PLAY_LIST = "https://api.bilibili.com/x/player/pagelist?aid={1}";
 
+    //根据av号获取详情
+    String  MEDIA_INFO = "https://api.bilibili.com/x/web-interface/view?aid={1}";
     //获取下载地址
     String MEDIA_DOWNLOAD_INFO = "https://api.bilibili.com/x/player/playurl?avid={1}&cid={2}&qn={3}&otype=json";
 }
