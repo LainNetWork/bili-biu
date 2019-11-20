@@ -21,21 +21,29 @@ public class ApiServiceTest {
     }
     @Test
     public void test2(){
-        UserCollection collection = apiService.getUserCollections(123456L).get(2);
+        UserCollection collection = apiService.getUserCollections(1631252L).get(2);
         System.out.println(collection.getId());
-        System.out.println(apiService.getAllMediaInCollection(collection.getId()));
+        System.out.println(apiService.getAllMediaInCollection(collection.getId(),null));
     }
 
     @Test
     public void test3(){
 //        apiService.
-        List<CollectionMedia> list = apiService.getAllMediaInCollection(207520352L);
+        List<CollectionMedia> list = apiService.getAllMediaInCollection(207520352L,null);
 
         System.out.println(list);
     }
 
     @Test
     public void test4(){
+//        apiService.
+        CollectionMedia media = apiService.getMediaInfo(75408133L,null);
+
+        System.out.println(media);
+    }
+
+    @Test
+    public void test5(){
 //        apiService.
         CollectionMedia media = apiService.getMediaInfo(75408133L,null);
 
