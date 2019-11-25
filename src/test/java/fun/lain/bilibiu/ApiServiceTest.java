@@ -1,6 +1,9 @@
 package fun.lain.bilibiu;
 
+import fun.lain.bilibiu.cache.entity.CachePartTask;
+import fun.lain.bilibiu.cache.service.CacheTask;
 import fun.lain.bilibiu.collection.entity.CollectionMedia;
+import fun.lain.bilibiu.collection.entity.MediaPart;
 import fun.lain.bilibiu.collection.entity.UserCollection;
 import fun.lain.bilibiu.collection.service.ApiService;
 import org.junit.jupiter.api.Test;
@@ -37,9 +40,16 @@ public class ApiServiceTest {
     @Test
     public void test4(){
 //        apiService.
-        CollectionMedia media = apiService.getMediaInfo(75408133L,null);
+        CollectionMedia medias = apiService.getMediaInfo(75408133L,null);
+        MediaPart part = medias.getParts().get(0);
+        CachePartTask task = CachePartTask.builder()
+                .avid(part.getId())
+                .cid(part.getCid())
+                .size(part.getDownLoadInfos().get(0).getSize())
+                .build();
 
-        System.out.println(media);
+        Thread t = new Thread(new CacheTask(task));
+        t.start();
     }
 
     @Test
