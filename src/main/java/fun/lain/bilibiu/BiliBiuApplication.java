@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
 
 @SpringBootApplication
 @MapperScan(basePackages = "fun.lain.**.mapper")
-public class BiliBiuApplication implements CommandLineRunner {
+public class BiliBiuApplication{
 
 @Resource
 ApiService apiService;
@@ -43,18 +43,4 @@ ApiService apiService;
 
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        CollectionMedia medias = apiService.getMediaInfo(75408133L,"SESSDATA=99fc2115%2C1576742104%2Cba6373b1");
-        MediaPart part = medias.getParts().get(2);
-        CachePartTask task = CachePartTask.builder()
-                .avid(part.getId())
-                .cid(part.getCid())
-                .downloadUrl(part.getDownLoadInfos().get(0).getUrl())
-                .size(part.getDownLoadInfos().get(0).getSize())
-                .build();
-        System.out.println(part);
-        Thread t = new Thread(new CacheTask(task));
-        t.start();
-    }
 }

@@ -26,7 +26,7 @@ public class CacheTask implements Runnable{
     private static final String BASE_URL = "https://www.bilibili.com/video/av";
     private CachePartTask cachePartTask;
     private CacheInfoService cacheInfoService;
-    private ApiService apiService;
+//    private ApiService apiService;
     private String cookie;
     private String savePath;
 
@@ -34,27 +34,24 @@ public class CacheTask implements Runnable{
     public CacheTask(CachePartTask cachePartTask){
         this.cachePartTask = cachePartTask;
         this.cacheInfoService = BeanUtil.getBean(CacheInfoService.class);
-        this.apiService = BeanUtil.getBean(ApiService.class);
+//        this.apiService = BeanUtil.getBean(ApiService.class);
         this.savePath = BeanUtil.getBean(Environment.class).getProperty("lain.save-path");
     }
-    public CacheTask(CachePartTask cachePartTask,String cookie){
-        this.cachePartTask = cachePartTask;
-        this.cacheInfoService = BeanUtil.getBean(CacheInfoService.class);
-        this.apiService = BeanUtil.getBean(ApiService.class);
-        this.savePath = BeanUtil.getBean(Environment.class).getProperty("lain.save-path");
-        this.cookie = cookie;
-
-    }
+//    public CacheTask(CachePartTask cachePartTask,String cookie){
+//        this.cachePartTask = cachePartTask;
+//        this.cacheInfoService = BeanUtil.getBean(CacheInfoService.class);
+////        this.apiService = BeanUtil.getBean(ApiService.class);
+//        this.savePath = BeanUtil.getBean(Environment.class).getProperty("lain.save-path");
+//        this.cookie = cookie;
+//
+//    }
 
 
 
     @Override
     public void run() {
         //缓存，获取到下载链接之后，根据返回的size，以8M为一个下载块，每次循环都记录当前的下载进度
-        long size = this.cachePartTask.getSize();
-        int block = 8 * 1024 * 1024;
-        int count = 0;//下载的块个数
-        long cacheSize= this.cachePartTask.getCacheSize();
+
 
         String fileDir = String.format(savePath+"/%s/%s",this.cachePartTask.getAvid(),this.cachePartTask.getCid());
         //创建缓存目录
@@ -65,25 +62,35 @@ public class CacheTask implements Runnable{
             cacheFile.delete();
             cacheFile.mkdirs();
         }
-        File  videoFile = new File(String.format(fileDir+"/%s%d%s",File.separator,this.cachePartTask.getCid(),".temp"));
+        File  videoFile = new File(String.format(fileDir+"/%s%d-%d%s",File.separator,this.cachePartTask.getCid(),this.cachePartTask.getQuality(),".temp"));
+        long cacheSize = 0;
+        if(videoFile.exists()){
+             cacheSize = videoFile.length();
+        }
+        long size = this.cachePartTask.getSize();
+        int block = 8 * 1024 * 1024;
+        int count = 0;//下载的块个数
         try (RandomAccessFile file = new RandomAccessFile(videoFile,"rw")){
             URL downUrl  = new URL(this.cachePartTask.getDownloadUrl());
-
+            file.seek(cacheSize);
             boolean flag = true;
             //终止条件，当块数*count>=size时
             long length = 0;
             while (flag){
                 //校验任务是否暂停或取消
 
-                long start = cachePartTask.getCacheSize() + count * block +1;//加上上次缓存的内容
+                long start = cacheSize + count * block +1;//加上上次缓存的内容
                 if(count==0){
-                    start = 0;
+                    start = cacheSize + 0;
                 }
                 count++;
-                long end = count*block;
+                long end = cacheSize + count * block;
                 if(end>=size){
                     end = size;
                     flag = false;
+                }
+                if(start == end){
+                    break;
                 }
                 URLConnection connection = downUrl.openConnection();
                 connection.setRequestProperty(HttpHeaders.REFERER,BASE_URL+this.cachePartTask.getAvid());
@@ -107,16 +114,15 @@ public class CacheTask implements Runnable{
                 System.out.println(String.format("size:%d now: %d start:%d end:%d",this.cachePartTask.getSize(),length,start,end));
             }
             //改名
-
+            file.close();
             if(cachePartTask.getDownloadUrl().contains(".mp4")){
-                videoFile.renameTo(new File(FilenameUtils.getPrefix(videoFile.getPath())+".mp4"));
+                File targetFile = new File(FilenameUtils.removeExtension(videoFile.getPath())+".mp4");
+                videoFile.renameTo(targetFile);
             }else{
-                videoFile.renameTo(new File(FilenameUtils.getPrefix(videoFile.getPath())+".flv"));
+                File targetFile = new File(FilenameUtils.removeExtension(videoFile.getPath())+".flv");
+                videoFile.renameTo(targetFile);
             }
-
-
-
-
+            System.out.println("over");
         } catch (FileNotFoundException | MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

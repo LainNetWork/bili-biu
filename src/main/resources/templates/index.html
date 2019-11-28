@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  >
+<head>
+    <meta charset="UTF-8">
+    <div th:replace="header"/>
+</head>
+<body>
+<div id="app">
+    <el-row>
+
+        <el-col span="4" class="left-bar">
+            <el-menu
+                    @select="changeBar"
+                    default-active="1"
+                    background-color="#545c64"
+                    active-text-color="#ffd04b"
+                    text-color="#fff"
+                    mode="vertical"
+            >
+                <el-menu-item index="1">配置</el-menu-item>
+                <el-menu-item index="2">管理</el-menu-item>
+            </el-menu>
+        </el-col>
+        <el-col :span="20">
+            <div :class="showConfig">
+                <el-row gutter="10">
+                    <el-col span="4">
+                        <el-input size="small" placeholder="输入你的B站cookie"></el-input>
+                    </el-col>
+                    <el-col span="3">
+                        <el-button size="small">获取收藏夹列表</el-button>
+                    </el-col>
+                </el-row>
+            </div>
+
+            <div :class="showMgr">
+                2
+            </div>
+        </el-col>
+    </el-row>
+</div>
+
+</body>
+<script>
+    var app = new Vue({
+        el:'#app',
+        data:{
+            cookie:'',
+            showConfig:'',
+            showMgr:'hide',
+
+        },methods:{
+            getCollectionList(){
+                //获取收藏列表
+                this.axios.get("",{
+
+                });
+            },
+            changeBar(index){
+                if(index ==1){
+                    this.showConfig = '';
+                    this.showMgr = 'hide';
+                }
+                if(index ==2){
+                    this.showConfig = 'hide';
+                    this.showMgr = '';
+                }
+            }
+        }
+    });
+</script>
+<style>
+    .left-bar {
+        height: 600px;
+        background: #545c64;
+    }
+    .hide{
+        display: none;
+    }
+    body{
+        margin: 0px;
+    }
+</style>
+</html>
