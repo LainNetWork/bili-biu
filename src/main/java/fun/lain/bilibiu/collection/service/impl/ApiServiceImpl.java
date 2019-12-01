@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import fun.lain.bilibiu.collection.entity.*;
 import fun.lain.bilibiu.collection.service.ApiService;
+import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.common.var.ApiVar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -78,9 +79,13 @@ public class ApiServiceImpl implements ApiService {
         ResponseEntity<JSONObject> response = restTemplate.exchange(ApiVar.USER_COLLECT_LIST,HttpMethod.GET,req,JSONObject.class,uid);
         JSONObject data  = response.getBody();
         if(response.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
-            throw new RuntimeException("接口请求异常！");
+            throw new LainException("接口请求异常！");
         }
-        JSONArray array = data.getJSONObject("data").getJSONArray("list");
+        data = data.getJSONObject("data");
+        if(data==null){
+            throw new LainException("数据为空！");
+        }
+        JSONArray array = data.getJSONArray("list");
         List<UserCollection> userCollections = array.toJavaList(UserCollection.class);
         return userCollections;
     }

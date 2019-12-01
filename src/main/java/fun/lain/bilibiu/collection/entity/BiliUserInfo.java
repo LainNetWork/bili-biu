@@ -8,5 +8,6 @@ import lombok.Data;
 public class BiliUserInfo {
     private String uname;
     private String face;
+
     private Long mid;
 }

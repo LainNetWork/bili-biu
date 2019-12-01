@@ -25,10 +25,16 @@
             <div :class="showConfig">
                 <el-row gutter="10">
                     <el-col span="4">
-                        <el-input size="small" placeholder="输入你的B站cookie"></el-input>
+                        <el-select size="small" v-model="userInfoType">
+                            <el-option :value='0' label="用户UID"></el-option>
+                            <el-option :value='1' label="用户Cookie"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col span="4">
+                        <el-input size="small" v-model="userIdentical"></el-input>
                     </el-col>
                     <el-col span="3">
-                        <el-button size="small">获取收藏夹列表</el-button>
+                        <el-button size="small" @click="getCollectionList">获取收藏夹列表</el-button>
                     </el-col>
                 </el-row>
             </div>
@@ -48,13 +54,18 @@
             cookie:'',
             showConfig:'',
             showMgr:'hide',
-
+            userInfoType:0,
+            userIdentical:''
         },methods:{
             getCollectionList(){
                 //获取收藏列表
-                this.axios.get("",{
+                axios.post("/api/getCollection",{
+                    type:this.userInfoType,
+                    value:this.userIdentical
+                }).then(res=>{
+                    console.log(res.data)
+                })
 
-                });
             },
             changeBar(index){
                 if(index ==1){
