@@ -23,5 +23,10 @@ public class SaveTask {
 
     private String cookie;
 
+    /**
+     * cron表达式，代表检测收藏夹更新的周期
+     */
+    private String cron;
+
     //删除就直接从数据库中删除，不做标记
 }

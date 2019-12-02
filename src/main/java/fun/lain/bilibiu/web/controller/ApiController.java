@@ -3,10 +3,12 @@ package fun.lain.bilibiu.web.controller;
 import com.alibaba.fastjson.JSONObject;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
+import fun.lain.bilibiu.web.entity.SaveTaskParam;
 import fun.lain.bilibiu.web.service.BackApiService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,7 +25,7 @@ public class ApiController {
 
     //保存任务
     @PostMapping("/saveTask")
-    public Echo saveTask(){
-        return null;
+    public Echo saveTask(@Valid SaveTaskParam saveTaskParam){
+        return backApiService.saveCollection(saveTaskParam);
     }
 }
