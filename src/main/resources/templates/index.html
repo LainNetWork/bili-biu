@@ -5,45 +5,97 @@
     <div th:replace="header"/>
 </head>
 <body>
-<div id="app">
-    <el-row>
+<div id="app" style="height: 100%">
 
-        <el-col span="4" class="left-bar">
-            <el-menu
-                    @select="changeBar"
-                    default-active="1"
-                    background-color="#545c64"
-                    active-text-color="#ffd04b"
-                    text-color="#fff"
-                    mode="vertical"
-            >
-                <el-menu-item index="1">配置</el-menu-item>
-                <el-menu-item index="2">管理</el-menu-item>
-            </el-menu>
-        </el-col>
-        <el-col :span="20">
-            <div :class="showConfig">
-                <el-row gutter="10">
-                    <el-col span="4">
-                        <el-select size="small" v-model="userInfoType">
-                            <el-option :value='0' label="用户UID"></el-option>
-                            <el-option :value='1' label="用户Cookie"></el-option>
-                        </el-select>
-                    </el-col>
-                    <el-col span="4">
-                        <el-input size="small" v-model="userIdentical"></el-input>
-                    </el-col>
-                    <el-col span="3">
-                        <el-button size="small" @click="getCollectionList">获取收藏夹列表</el-button>
-                    </el-col>
-                </el-row>
-            </div>
+        <el-row style="height: 100%">
 
-            <div :class="showMgr">
-                2
-            </div>
-        </el-col>
-    </el-row>
+            <el-col span="4" class="left-bar">
+                <el-menu
+                        @select="changeBar"
+                        default-active="1"
+                        background-color="#545c64"
+                        active-text-color="#ffd04b"
+                        text-color="#fff"
+                        mode="vertical"
+                >
+                    <el-menu-item index="1">配置</el-menu-item>
+                    <el-menu-item index="2">管理</el-menu-item>
+                </el-menu>
+            </el-col>
+
+            <el-col :span="20">
+                <div :class="showConfig">
+                    <div style="margin: 50px">
+                        <el-row>
+                            <el-col span="12">
+                                <el-divider content-position="left">用户信息</el-divider>
+                                <el-row gutter="10">
+                                    <el-col span="6">
+                                        <el-tooltip content="使用cookie可以获得更高级别的画质~" placement="top">
+                                            <el-select size="small" v-model="userInfoType">
+                                                <el-option :value='0' label="用户UID"></el-option>
+                                                <el-option :value='1' label="用户Cookie"></el-option>
+                                            </el-select>
+                                        </el-tooltip>
+                                    </el-col>
+                                    <el-col span="10">
+                                        <el-input v-if="userInfoType==1" size="small" v-model="userIdentical" placeholder="cookie只需要SESSDATA字段"></el-input>
+                                        <el-input v-if="userInfoType==0" size="small" v-model="userIdentical" placeholder="请填入用户UID"></el-input>
+                                    </el-col>
+                                    <el-col span="8">
+                                        <el-button style="float: right" size="small" @click="getCollectionList" type="primary">获取收藏夹列表</el-button>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <p></p>
+                                </el-row>
+                                <el-row>
+                                    <el-col span="24">
+                                        <el-transfer
+                                                :titles="['收藏夹列表', '要备份的收藏夹']"
+                                                filterable
+                                                v-model="collectionSelect.ids"
+                                                :data="collectionSelect.value">
+                                        </el-transfer>
+                                    </el-col>
+                                </el-row>
+                                <el-divider content-position="left">监控周期</el-divider>
+                                <el-row gutter="10">
+                                    <el-col span="6">
+                                        <el-radio v-model="radio" :label="1">选择监控周期</el-radio>
+                                    </el-col>
+                                    <el-col span="6">
+                                        <el-radio v-model="radio" :label="2">自定义cron表达式</el-radio>
+                                    </el-col>
+                                    <el-col span="12"  v-if="radio == 1">
+                                        <el-select v-model="cron" style="float: right" size="small">
+                                            <el-option label="每天" value="0 0/15 * * * ? "></el-option>
+                                        </el-select>
+                                    </el-col>
+                                    <el-col span="12"  v-if="radio == 2">
+                                        <el-input v-model="cron" size="small" style="width: 80%;float: right" placeholder="Cron表达式"></el-input>
+                                    </el-col>
+                                </el-row>
+                                <el-row style="padding-top: 50px">
+                                    <el-button style="float: right" type="primary" @click="saveConfig">保存</el-button>
+                                </el-row>
+                            </el-col>
+                            <el-col span="12">
+                                <div style="margin: 30%">
+                                    <p>此处应当有高清二次元动漫美图</p>
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </div>
+
+                <div :class="showMgr">
+                    2
+                </div>
+            </el-col>
+        </el-row>
+
+
 </div>
 
 </body>
@@ -51,19 +103,78 @@
     var app = new Vue({
         el:'#app',
         data:{
+            radio:1,
             cookie:'',
             showConfig:'',
             showMgr:'hide',
             userInfoType:0,
-            userIdentical:''
-        },methods:{
+            userIdentical:'',
+            cron:'',
+            collectionSelect:{
+                value:[],
+                ids:[]
+            },
+
+        },
+        watch:{
+            radio: function (newVal) {
+                this.cron = '';
+            }
+        }
+        ,methods:{
             getCollectionList(){
                 //获取收藏列表
                 axios.post("/api/getCollection",{
                     type:this.userInfoType,
                     value:this.userIdentical
                 }).then(res=>{
-                    console.log(res.data)
+                    if(res.data.code == 200){
+                        let collects = new Array()
+                        for(let i in res.data.data){
+                            let collect = res.data.data[i]
+                            collects.push({
+                                label:collect["title"] + ' ('+ collect["mediaCount"] + ')',
+                                key:collect["id"]
+                            })
+                        }
+                        this.collectionSelect.value = collects;
+
+                    }else{
+                        this.$message({
+                            type: "warning",
+                            message:res.data.message
+                        });
+                    }
+
+                }).catch(res=>{
+                    this.$message({
+                        type: "warning",
+                        message:'服务器异常'
+                    });
+                })
+
+            },
+            saveConfig(){
+                let form = {
+                    ids:this.collectionSelect.ids,
+                    cron:this.cron,
+                    userInfoType:this.userInfoType,
+                    userIdentical:this.userIdentical
+                };
+                axios.post("/api/saveTask",form).then(res =>{
+                    if(res.data.code ==200){
+
+                    }else{
+                        this.$message({
+                            type:"warning",
+                            message: res.data.message
+                        })
+                    }
+                }).catch(res=>{
+                    this.$message({
+                        type: "warning",
+                        message:'服务器异常'
+                    });
                 })
 
             },
@@ -81,8 +192,16 @@
     });
 </script>
 <style>
+    html{
+        height: 100%;
+
+    }
+
+    body{
+        height: 100%;
+    }
     .left-bar {
-        height: 600px;
+        height: 100%;
         background: #545c64;
     }
     .hide{

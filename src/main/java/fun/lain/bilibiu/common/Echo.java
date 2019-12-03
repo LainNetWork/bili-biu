@@ -54,9 +54,13 @@ public class Echo {
         return echo;
     }
 
-    public static Echo error(int code,String message,Object data){
+    public static Echo error(Integer code,String message,Object data){
         Echo echo = new Echo();
         echo.setCode(code);
+        if(code == null){
+            echo.setCode(Code.ERROR.code);
+        }
+
         echo.setMessage(message);
         echo.setCode(Code.SUCCESS.getCode());
         echo.setData(data);

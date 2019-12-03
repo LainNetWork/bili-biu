@@ -4,11 +4,19 @@ import com.alibaba.fastjson.JSONObject;
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
+import fun.lain.bilibiu.common.exception.LainException;
+import fun.lain.bilibiu.web.entity.SaveCollection;
+import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.entity.SaveTaskParam;
+import fun.lain.bilibiu.web.mapper.SaveCollectionMapper;
+import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import fun.lain.bilibiu.web.service.BackApiService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -19,6 +27,11 @@ public class BackApiServiceImpl implements BackApiService {
 
     @Resource
     private ApiService apiService;
+
+    @Resource
+    SaveTaskMapper saveTaskMapper;
+    @Resource
+    SaveCollectionMapper saveCollectionMapper;
     @Override
     public Echo getUserCollection(String json) {
         JSONObject jsonObject = JSONObject.parseObject(json) ;
@@ -39,7 +52,7 @@ public class BackApiServiceImpl implements BackApiService {
 
         }else if(type.equals(1)){//1为cookie
             String cookie = jsonObject.getString("value");
-            if(cookie == null){
+            if(StringUtils.isBlank(cookie)){
                 return Echo.error("参数错误喵~");
             }
             userInfo = apiService.getUserInfo(cookie);
@@ -51,8 +64,16 @@ public class BackApiServiceImpl implements BackApiService {
     }
 
     @Override
+    @Transactional
     public Echo saveCollection(SaveTaskParam param) {
+        //校验Cron表达式
+        if(!CronSequenceGenerator.isValidExpression(param.getCron())){
+            return Echo.error("不合法的Cron表达式！");
+        }
+        //TODO 判断周期，不得小于限制时间
+
         BiliUserInfo info = null;
+        String cookie = "";
         switch (param.getUserInfoType())
         {
             case 0:
@@ -63,13 +84,29 @@ public class BackApiServiceImpl implements BackApiService {
                 break;
             case 1:
                 info = apiService.getUserInfo(param.getUserIdentical());
+                cookie = param.getUserIdentical();
             default:return Echo.error("参数异常！");
         }
 
+        //保存任务
+        SaveTask task = SaveTask.builder()
+                .cookie(cookie)
+                .cron(param.getCron())
+                .userId(info.getMid())
+                //获取头像
+                .status(SaveTask.Status.CREATE)
+                .build();
+        saveTaskMapper.insert(task);
         if(CollectionUtils.isNotEmpty(param.getIds())){
-
+            for(Long id:param.getIds()){
+                SaveCollection saveCollection = SaveCollection.builder()
+                        .taskId(task.getId())
+                        .collectionId(id)
+                        .build();
+                saveCollectionMapper.insert(saveCollection);
+            }
         }
-        return null;
+        return Echo.success("保存成功！");
     }
 
 }

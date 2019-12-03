@@ -25,7 +25,7 @@ public class ApiController {
 
     //保存任务
     @PostMapping("/saveTask")
-    public Echo saveTask(@Valid SaveTaskParam saveTaskParam){
+    public Echo saveTask(@Valid @RequestBody SaveTaskParam saveTaskParam){
         return backApiService.saveCollection(saveTaskParam);
     }
 }
