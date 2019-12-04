@@ -15,7 +15,7 @@ class BiliBiuApplicationTests {
     @Test
     void contextLoads() {
 
-        System.out.println(BeanUtil.getBean(Environment.class).getProperty("lain.user-agent"));
+        System.out.println(BeanUtil.getBean(Environment.class).getProperty("spring.datasource.url"));
     }
 
 }
