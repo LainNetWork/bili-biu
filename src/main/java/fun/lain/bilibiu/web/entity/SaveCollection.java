@@ -2,12 +2,12 @@ package fun.lain.bilibiu.web.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Table;
 
 /**
  * 任务关联收藏实体类
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "save_collect")
+@TableName("save_collect")
 public class SaveCollection {
     @TableId(type = IdType.AUTO)
     private Long id;

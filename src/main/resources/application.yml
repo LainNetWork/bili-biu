@@ -1,9 +1,10 @@
 spring:
   datasource:
-    url: jdbc:h2:~/laintest
+    url: jdbc:h2:@basedir@/db/laintest
     username: lain
     password: lain
     driver-class-name: org.h2.Driver
+    schema: classpath:init.sql
   h2:
     console:
       settings:
