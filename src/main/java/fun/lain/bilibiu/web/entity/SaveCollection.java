@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Table;
+
 /**
  * 任务关联收藏实体类
  */
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "save_collect")
 public class SaveCollection {
     @TableId(type = IdType.AUTO)
     private Long id;
