@@ -1,6 +1,10 @@
 package fun.lain.bilibiu.web.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sun.javafx.collections.MappingChange;
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
@@ -8,6 +12,7 @@ import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.web.entity.SaveCollection;
 import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.entity.SaveTaskParam;
+import fun.lain.bilibiu.web.entity.dto.SaveTaskDTO;
 import fun.lain.bilibiu.web.mapper.SaveCollectionMapper;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import fun.lain.bilibiu.web.service.BackApiService;
@@ -19,8 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Service("backApiService")
 public class BackApiServiceImpl implements BackApiService {
@@ -109,4 +113,35 @@ public class BackApiServiceImpl implements BackApiService {
         return Echo.success("保存成功！");
     }
 
+    @Override
+    public Echo getTaskList(Integer index,Integer size) {
+        Page<SaveTask> page = new Page<>(index,size);
+        IPage<SaveTask> list = saveTaskMapper.selectPage(page,new QueryWrapper<SaveTask>());
+        List<SaveTaskDTO> dtoList = new ArrayList<>();
+        list.getRecords().forEach(task ->{
+            SaveTaskDTO dto = SaveTaskDTO.builder()
+                    .cron(task.getCron())
+                    .id(task.getId())
+                    .uid(task.getUserId())
+                    .status(getStatus(task.getStatus()))
+                    .build();
+            dtoList.add(dto);
+
+        });
+        Map reMap = new HashMap();
+        reMap.put("data",dtoList);
+        reMap.put("size",list.getSize());
+        reMap.put("total",list.getTotal());
+        reMap.put("now",list.getCurrent());
+        return Echo.success().data(reMap);
+    }
+
+    private String getStatus(int code){
+        switch (code){
+            case 0 : return "创建";
+            case 1 : return "停止";
+            case 2 : return  "运行";
+        }
+        return "状态异常";
+    }
 }

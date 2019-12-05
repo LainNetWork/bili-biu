@@ -23,9 +23,15 @@ public class ApiController {
         return  backApiService.getUserCollection(json);
     }
 
-    //保存任务
+    //保存任务,一个用户只能建立一个任务
     @PostMapping("/saveTask")
     public Echo saveTask(@Valid @RequestBody SaveTaskParam saveTaskParam){
         return backApiService.saveCollection(saveTaskParam);
+    }
+
+    //获取所有创建的任务列表
+    @GetMapping("/getTaskList")
+    public Echo getTaskList(Integer index,Integer size){
+        return backApiService.getTaskList(index,size);
     }
 }

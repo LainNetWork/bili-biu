@@ -26,7 +26,7 @@
             <el-col :span="20">
                 <div :class="showConfig">
                     <div style="margin: 50px">
-                        <el-row>
+                        <el-row gutter="10">
                             <el-col span="12">
                                 <el-divider content-position="left">用户信息</el-divider>
                                 <el-row gutter="10">
@@ -81,8 +81,14 @@
                                 </el-row>
                             </el-col>
                             <el-col span="12">
-                                <div style="margin: 30%">
-                                    <p>此处应当有高清二刺螈动漫美图</p>
+                                <el-divider content-position="left">任务列表</el-divider>
+                                <div style="padding: 20px">
+                                    <el-table :data="taskList.data">
+                                        <el-table-column label="用户UID" prop="uid"></el-table-column>
+                                        <el-table-column label="执行周期" prop="cron"></el-table-column>
+                                        <el-table-column label="状态" prop="status"></el-table-column>
+                                        <el-table-column label="操作"></el-table-column>
+                                    </el-table>
                                 </div>
                             </el-col>
                         </el-row>
@@ -90,7 +96,7 @@
                 </div>
 
                 <div :class="showMgr">
-                    2
+
                 </div>
             </el-col>
         </el-row>
@@ -110,6 +116,12 @@
             userInfoType:0,
             userIdentical:'',
             cron:'',
+            taskList:{
+                data: [],
+                total:0,
+                index:0,
+                size: 10
+            },
             collectionSelect:{
                 value:[],
                 ids:[]
@@ -120,8 +132,31 @@
             radio: function (newVal) {
                 this.cron = '';
             }
+        },
+        created(){
+            this.loadTaskList();
         }
         ,methods:{
+            loadTaskList(){
+                axios.get("/api/getTaskList",{
+                    params:{
+                        index:this.taskList.index,
+                        size:this.taskList.size
+                    }
+                }).then(
+                    res=>{
+                        if(res.data.code == 200){
+                            this.taskList.data = res.data.data.data
+                            this.taskList.total = res.data.data.total
+                        }else{
+                            this.$message({
+                                type:'error',
+                                message:'服务器错误！'
+                            })
+                        }
+                    }
+                );
+            },
             getCollectionList(){
                 //获取收藏列表
                 axios.post("/api/getCollection",{
