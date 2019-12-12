@@ -14,4 +14,5 @@ public class SaveTaskDTO {
     private Long uid;
     private String cron;
     private String status;
+    private Integer statusCode;
 }

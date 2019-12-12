@@ -124,6 +124,7 @@ public class BackApiServiceImpl implements BackApiService {
                     .id(task.getId())
                     .uid(task.getUserId())
                     .status(getStatus(task.getStatus()))
+                    .statusCode(task.getStatus())
                     .build();
             dtoList.add(dto);
 
