@@ -2,11 +2,13 @@ package fun.lain.bilibiu.web.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
+import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.web.entity.SaveCollection;
 import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.entity.SaveTaskParam;
@@ -14,9 +16,13 @@ import fun.lain.bilibiu.web.entity.dto.SaveTaskDTO;
 import fun.lain.bilibiu.web.mapper.SaveCollectionMapper;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import fun.lain.bilibiu.web.service.BackApiService;
+import fun.lain.bilibiu.web.service.ScheduleService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +31,14 @@ import javax.annotation.Resource;
 import java.util.*;
 
 @Service("backApiService")
+@Slf4j
 public class BackApiServiceImpl implements BackApiService {
 
     @Resource
     private ApiService apiService;
+
+    @Autowired
+    ScheduleService scheduleService;
 
     @Resource
     SaveTaskMapper saveTaskMapper;
@@ -108,6 +118,7 @@ public class BackApiServiceImpl implements BackApiService {
                 saveCollectionMapper.insert(saveCollection);
             }
         }
+
         return Echo.success("保存成功！");
     }
 
@@ -133,6 +144,17 @@ public class BackApiServiceImpl implements BackApiService {
         reMap.put("total",list.getTotal());
         reMap.put("now",list.getCurrent());
         return Echo.success().data(reMap);
+    }
+
+    @Override
+    public void start(Long taskId) {
+        try {
+            scheduleService.createAndStart(taskId);
+        } catch (SchedulerException e) {
+            log.error("创建定时任务失败!",e);
+            throw new LainException("创建定时任务失败!");
+        }
+
     }
 
     private String getStatus(int code){

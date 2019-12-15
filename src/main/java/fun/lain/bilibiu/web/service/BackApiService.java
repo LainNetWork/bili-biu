@@ -16,4 +16,6 @@ public interface BackApiService {
      * @return
      */
     Echo getTaskList(Integer index,Integer size);
+
+    void start(Long taskId);
 }

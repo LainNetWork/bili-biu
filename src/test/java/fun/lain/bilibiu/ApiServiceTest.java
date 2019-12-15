@@ -6,6 +6,7 @@ import fun.lain.bilibiu.collection.entity.CollectionMedia;
 import fun.lain.bilibiu.collection.entity.MediaPart;
 import fun.lain.bilibiu.collection.entity.UserCollection;
 import fun.lain.bilibiu.collection.service.ApiService;
+import fun.lain.bilibiu.common.app.mapper.AppInfoMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,5 +59,12 @@ public class ApiServiceTest {
         CollectionMedia media = apiService.getMediaInfo(75408133L,null);
 
         System.out.println(media);
+    }
+    @Resource
+    AppInfoMapper appInfoMapper;
+
+    @Test
+    public void test6(){
+        System.out.println(appInfoMapper.ifTableInit());
     }
 }

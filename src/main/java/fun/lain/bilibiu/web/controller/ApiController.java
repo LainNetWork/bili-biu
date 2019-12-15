@@ -34,4 +34,20 @@ public class ApiController {
     public Echo getTaskList(Integer index,Integer size){
         return backApiService.getTaskList(index,size);
     }
+
+    @GetMapping("/task/start")
+    public Echo start(Long taskId){
+        backApiService.start(taskId);
+        return Echo.success();
+    }
+
+    @GetMapping("/task/stop")
+    public Echo stop(Long taskId){
+        return Echo.success();
+    }
+
+    @GetMapping("/task/pause")
+    public Echo pause(Long taskId){
+        return Echo.success();
+    }
 }

@@ -26,13 +26,13 @@ import javax.persistence.Table;
 public class SaveTask {
     public interface Status{
         Integer CREATE = 0;
-        Integer STOP = 1;
-        Integer RUNNING = 2;
+        Integer RUNNING = 1;
+        Integer PAUSE = 2;
     }
 
 
     @TableId(type = IdType.AUTO)
-    private Long Id;
+    private Long id;
 
     //用户UID，目前只支持单账号,用cookie也要先获取用户信息，以uid为准
     //即使是多账号，一个账号也应该只能保存一个任务，添加，删除收藏夹监视都是在一个任务里的
