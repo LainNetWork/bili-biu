@@ -21,6 +21,6 @@ CREATE TABLE `app_info` (
   `initState` int(1) DEFAULT NULL COMMENT '初始化状态',
   `version` varchar(10) DEFAULT NULL COMMENT '版本号',
   PRIMARY KEY (`id`)
-)
+);
 
-INSERT  INTO `app_Info` (`initState`,`version`) VALUES (1,'Ver.0.01')
+INSERT  INTO `app_Info` (`initState`,`version`) VALUES (1,'Ver.0.01');
