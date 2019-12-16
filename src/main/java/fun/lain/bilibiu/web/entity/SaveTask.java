@@ -28,6 +28,7 @@ public class SaveTask {
         Integer CREATE = 0;
         Integer RUNNING = 1;
         Integer PAUSE = 2;
+        Integer ERROR = 3;
     }
 
 

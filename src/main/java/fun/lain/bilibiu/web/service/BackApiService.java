@@ -18,4 +18,8 @@ public interface BackApiService {
     Echo getTaskList(Integer index,Integer size);
 
     void start(Long taskId);
+
+    void pause(Long taskId);
+
+    void delete(Long taskId);
 }

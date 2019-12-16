@@ -11,9 +11,6 @@ public class MonitorTask implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SaveTask task = (SaveTask) context.getMergedJobDataMap().get("task");
-        if(task.getStatus().equals(SaveTask.Status.CREATE)){
-            return;
-        }
         log.info("进入定时任务！");
         log.info("定时任务内容：");
         System.out.println(task);

@@ -157,6 +157,16 @@ public class BackApiServiceImpl implements BackApiService {
 
     }
 
+    @Override
+    public void pause(Long taskId) {
+        scheduleService.pause(taskId);
+    }
+
+    @Override
+    public void delete(Long taskId) {
+        scheduleService.delete(taskId);
+    }
+
     private String getStatus(int code){
         switch (code){
             case 0 : return "创建";

@@ -1,11 +1,15 @@
 package fun.lain.bilibiu;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
 import fun.lain.bilibiu.cache.service.CacheTask;
 import fun.lain.bilibiu.collection.entity.CollectionMedia;
 import fun.lain.bilibiu.collection.entity.MediaPart;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.app.service.AppService;
+import fun.lain.bilibiu.web.entity.SaveTask;
+import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
+import fun.lain.bilibiu.web.service.ScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.quartz.Scheduler;
@@ -21,15 +25,27 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.nio.charset.Charset;
+import java.util.List;
 
 @SpringBootApplication
 @MapperScan(basePackages = "fun.lain.**.mapper")
 @Slf4j
 public class BiliBiuApplication{
+
+
+    public static void main(String[] args) {
+        SpringApplication.run(BiliBiuApplication.class, args);
+
+    }
+
+
+
     @Resource
     private AppService appService;
     @Autowired
-    private Scheduler scheduler;
+    private ScheduleService scheduleService;
+    @Resource
+    private SaveTaskMapper saveTaskMapper;
 
     @Bean
     public RestTemplate restTemplate(){
@@ -55,11 +71,10 @@ public class BiliBiuApplication{
         }
         //初始化调度器
         //TODO 在启动后初始化调度器，构建触发器和任务
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(BiliBiuApplication.class, args);
+        scheduleService.initTask();
 
     }
+
+
 
 }

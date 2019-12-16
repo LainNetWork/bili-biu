@@ -7,4 +7,5 @@ public interface ScheduleService {
     void resume(Long taskId);
     void pause(Long taskId);
     void delete(Long taskId);
+    void initTask();
 }

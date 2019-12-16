@@ -1,5 +1,6 @@
 package fun.lain.bilibiu.web.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service("scheduleService")
 @Slf4j
@@ -32,29 +34,32 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public void createAndStart(Long taskId) throws SchedulerException {
-        Trigger.TriggerState triggerState = scheduler.getTriggerState(getTriggerKey(taskId));
         SaveTask task = saveTaskMapper.selectById(taskId);
+        createAndStart(task);
+    }
+
+    private void createAndStart(SaveTask task) throws SchedulerException {
+        //        Trigger.TriggerState triggerState = scheduler.getTriggerState(getTriggerKey(taskId));
+
         if(task==null){
             throw new LainException("任务不存在！");
         }
-        if(task.getStatus().equals(SaveTask.Status.PAUSE)){
-            resume(taskId);
-        }
-        JobDetail job = JobBuilder.newJob().ofType(MonitorTask.class).withIdentity(getJobKey(taskId)).build();
+        JobDetail job = JobBuilder.newJob().ofType(MonitorTask.class).withIdentity(getJobKey(task.getId())).build();
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
-            .cronSchedule(task.getCron()).withMisfireHandlingInstructionDoNothing();
+                .cronSchedule(task.getCron()).withMisfireHandlingInstructionDoNothing();
 
         Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity(getTriggerKey(taskId))
+                .withIdentity(getTriggerKey(task.getId()))
                 .withSchedule(cronScheduleBuilder)
 
                 .build();
         job.getJobDataMap().put("task",task);
         scheduler.scheduleJob(job,trigger);
         saveTaskMapper.updateById(SaveTask.builder()
-                .id(taskId)
+                .id(task.getId())
                 .status(SaveTask.Status.RUNNING)
                 .build());
+
     }
 
     @Override
@@ -94,6 +99,22 @@ public class ScheduleServiceImpl implements ScheduleService {
         } catch (SchedulerException e) {
             log.error("删除定时任务失败!",e);
             throw new LainException("删除定时任务失败!");
+        }
+    }
+
+    @Override
+    public void initTask() {
+        List<SaveTask> taskList = saveTaskMapper.selectList(new QueryWrapper<SaveTask>().ne("status",SaveTask.Status.CREATE));
+        for(SaveTask task:taskList){
+            try {
+                createAndStart(task);
+            } catch (SchedulerException e) {
+                log.error("任务%d启动失败！",task.getId());
+                saveTaskMapper.updateById(SaveTask.builder()
+                        .id(task.getId())
+                        .status(SaveTask.Status.ERROR)
+                        .build());
+            }
         }
     }
 }

@@ -41,13 +41,15 @@ public class ApiController {
         return Echo.success();
     }
 
-    @GetMapping("/task/stop")
-    public Echo stop(Long taskId){
+    @GetMapping("/task/pause")
+    public Echo pause(Long taskId){
+        backApiService.pause(taskId);
         return Echo.success();
     }
 
-    @GetMapping("/task/pause")
-    public Echo pause(Long taskId){
+    @GetMapping("/task/delete")
+    public Echo delete(Long taskId){
+        backApiService.pause(taskId);
         return Echo.success();
     }
 }
