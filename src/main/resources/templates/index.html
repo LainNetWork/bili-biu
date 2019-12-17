@@ -50,14 +50,13 @@
                                     <p></p>
                                 </el-row>
                                 <el-row>
-                                    <el-col span="24">
-                                        <el-transfer
-                                                :titles="['收藏夹列表', '要备份的收藏夹']"
-                                                filterable
-                                                v-model="collectionSelect.ids"
-                                                :data="collectionSelect.value">
-                                        </el-transfer>
-                                    </el-col>
+                                    <el-transfer
+                                            size="small"
+                                            :titles="['收藏夹列表', '要备份的收藏夹']"
+                                            filterable
+                                            v-model="collectionSelect.ids"
+                                            :data="collectionSelect.value">
+                                    </el-transfer>
                                 </el-row>
                                 <el-divider content-position="left">监控周期</el-divider>
                                 <el-row gutter="10">
@@ -87,9 +86,9 @@
                                         <el-table-column label="用户UID" prop="uid"></el-table-column>
                                         <el-table-column label="执行周期" prop="cron"></el-table-column>
                                         <el-table-column label="状态" prop="status"></el-table-column>
-                                        <el-table-column label="操作">
+                                        <el-table-column label="操作" width="100">
                                             <template slot-scope="scope">
-                                                <span class="el-icon-video-play" @click=""></span>
+                                                <el-button circle icon="el-icon-video-play"></el-button>
                                             </template>
                                         </el-table-column>
                                     </el-table>
@@ -141,6 +140,9 @@
             this.loadTaskList();
         }
         ,methods:{
+            start(){
+                console.log("Lain")
+            },
             loadTaskList(){
                 axios.get("/api/getTaskList",{
                     params:{
