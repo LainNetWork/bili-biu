@@ -27,7 +27,7 @@
                 <div :class="showConfig">
                     <div style="margin: 50px">
                         <el-row gutter="10">
-                            <el-col span="12">
+                            <el-col span="8">
                                 <el-divider content-position="left">用户信息</el-divider>
                                 <el-row gutter="10">
                                     <el-col span="6">
@@ -50,20 +50,20 @@
                                     <p></p>
                                 </el-row>
                                 <el-row>
-                                    <el-transfer
-                                            size="small"
-                                            :titles="['收藏夹列表', '要备份的收藏夹']"
-                                            filterable
-                                            v-model="collectionSelect.ids"
-                                            :data="collectionSelect.value">
-                                    </el-transfer>
+                                    <span>收藏夹列表：</span>
+                                    <el-select v-model="collectionSelect.ids" multiple placeholder="请选择要备份的收藏夹">
+                                        <el-option
+                                                v-for="item in collectionSelect.value"
+                                                :key="item.key"
+                                                :label="item.label"
+                                                :value="item.key">
+                                        </el-option>
+                                    </el-select>
                                 </el-row>
                                 <el-divider content-position="left">监控周期</el-divider>
                                 <el-row gutter="10">
-                                    <el-col span="6">
+                                    <el-col span="12">
                                         <el-radio v-model="radio" :label="1">选择监控周期</el-radio>
-                                    </el-col>
-                                    <el-col span="6">
                                         <el-radio v-model="radio" :label="2">自定义cron表达式</el-radio>
                                     </el-col>
                                     <el-col span="12"  v-if="radio == 1">
@@ -79,7 +79,7 @@
                                     <el-button style="float: right" type="primary" @click="saveConfig">保存</el-button>
                                 </el-row>
                             </el-col>
-                            <el-col span="12">
+                            <el-col span="16">
                                 <el-divider content-position="left">任务列表</el-divider>
                                 <div style="padding: 20px">
                                     <el-table :data="taskList.data">
