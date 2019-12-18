@@ -7,103 +7,106 @@
 <body>
 <div id="app" style="height: 100%">
 
-        <el-row style="height: 100%">
+    <el-row style="height: 100%">
 
-            <el-col span="4" class="left-bar">
-                <el-menu
-                        @select="changeBar"
-                        default-active="1"
-                        background-color="#545c64"
-                        active-text-color="#ffd04b"
-                        text-color="#fff"
-                        mode="vertical"
-                >
-                    <el-menu-item index="1">配置</el-menu-item>
-                    <el-menu-item index="2">管理</el-menu-item>
-                </el-menu>
-            </el-col>
+        <el-col span="4" class="left-bar">
+            <el-menu
+                    @select="changeBar"
+                    default-active="1"
+                    background-color="#545c64"
+                    active-text-color="#ffd04b"
+                    text-color="#fff"
+                    mode="vertical"
+            >
+                <el-menu-item index="1">配置</el-menu-item>
+                <el-menu-item index="2">管理</el-menu-item>
+            </el-menu>
+        </el-col>
 
-            <el-col :span="20">
-                <div :class="showConfig">
-                    <div style="margin: 50px">
-                        <el-row gutter="10">
-                            <el-col span="8">
-                                <el-divider content-position="left">用户信息</el-divider>
-                                <el-row gutter="10">
-                                    <el-col span="6">
-                                        <el-tooltip content="使用cookie可以获得更高级别的画质~" placement="top">
-                                            <el-select size="small" v-model="userInfoType">
-                                                <el-option :value='0' label="用户UID"></el-option>
-                                                <el-option :value='1' label="用户Cookie"></el-option>
-                                            </el-select>
-                                        </el-tooltip>
-                                    </el-col>
-                                    <el-col span="10">
-                                        <el-input v-if="userInfoType==1" size="small" v-model="userIdentical" placeholder="cookie只需要SESSDATA字段"></el-input>
-                                        <el-input v-if="userInfoType==0" size="small" v-model="userIdentical" placeholder="请填入用户UID"></el-input>
-                                    </el-col>
-                                    <el-col span="8">
-                                        <el-button style="float: right" size="small" @click="getCollectionList" type="primary">获取收藏夹列表</el-button>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <p></p>
-                                </el-row>
-                                <el-row>
-                                    <span>收藏夹列表：</span>
-                                    <el-select v-model="collectionSelect.ids" multiple placeholder="请选择要备份的收藏夹">
-                                        <el-option
-                                                v-for="item in collectionSelect.value"
-                                                :key="item.key"
-                                                :label="item.label"
-                                                :value="item.key">
-                                        </el-option>
-                                    </el-select>
-                                </el-row>
-                                <el-divider content-position="left">监控周期</el-divider>
-                                <el-row gutter="10">
-                                    <el-col span="12">
-                                        <el-radio v-model="radio" :label="1">选择监控周期</el-radio>
-                                        <el-radio v-model="radio" :label="2">自定义cron表达式</el-radio>
-                                    </el-col>
-                                    <el-col span="12"  v-if="radio == 1">
-                                        <el-select v-model="cron" style="float: right" size="small">
-                                            <el-option label="每天" value="0 0/15 * * * ? "></el-option>
+        <el-col :span="20">
+            <div :class="showConfig">
+                <div style="margin: 50px">
+                    <el-row gutter="10">
+                        <el-col span="8">
+                            <el-divider content-position="left">用户信息</el-divider>
+                            <el-row gutter="10">
+                                <el-col span="6">
+                                    <el-tooltip content="使用cookie可以获得更高级别的画质~" placement="top">
+                                        <el-select size="small" v-model="userInfoType">
+                                            <el-option :value='0' label="用户UID"></el-option>
+                                            <el-option :value='1' label="用户Cookie"></el-option>
                                         </el-select>
-                                    </el-col>
-                                    <el-col span="12"  v-if="radio == 2">
-                                        <el-input v-model="cron" size="small" style="width: 80%;float: right" placeholder="Cron表达式"></el-input>
-                                    </el-col>
-                                </el-row>
-                                <el-row style="padding-top: 50px">
-                                    <el-button style="float: right" type="primary" @click="saveConfig">保存</el-button>
-                                </el-row>
-                            </el-col>
-                            <el-col span="16">
-                                <el-divider content-position="left">任务列表</el-divider>
-                                <div style="padding: 20px">
-                                    <el-table :data="taskList.data">
-                                        <el-table-column label="用户UID" prop="uid"></el-table-column>
-                                        <el-table-column label="执行周期" prop="cron"></el-table-column>
-                                        <el-table-column label="状态" prop="status"></el-table-column>
-                                        <el-table-column label="操作" width="100">
-                                            <template slot-scope="scope">
-                                                <el-button circle icon="el-icon-video-play"></el-button>
-                                            </template>
-                                        </el-table-column>
-                                    </el-table>
-                                </div>
-                            </el-col>
-                        </el-row>
-                    </div>
+                                    </el-tooltip>
+                                </el-col>
+                                <el-col span="10">
+                                    <el-input v-if="userInfoType==1" size="small" v-model="userIdentical" placeholder="cookie只需要SESSDATA字段"></el-input>
+                                    <el-input v-if="userInfoType==0" size="small" v-model="userIdentical" placeholder="请填入用户UID"></el-input>
+                                </el-col>
+                                <el-col span="8">
+                                    <el-button style="float: right" size="small" @click="getCollectionList" type="primary">获取收藏夹列表</el-button>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <p></p>
+                            </el-row>
+                            <el-row>
+                                <span>收藏夹列表：</span>
+                                <el-select v-model="collectionSelect.ids" multiple placeholder="请选择要备份的收藏夹">
+                                    <el-option
+                                            v-for="item in collectionSelect.value"
+                                            :key="item.key"
+                                            :label="item.label"
+                                            :value="item.key">
+                                    </el-option>
+                                </el-select>
+                            </el-row>
+                            <el-divider content-position="left">监控周期</el-divider>
+                            <el-row gutter="10">
+                                <el-col span="12">
+                                    <el-radio v-model="radio" :label="1">选择监控周期</el-radio>
+                                    <el-radio v-model="radio" :label="2">自定义cron表达式</el-radio>
+                                </el-col>
+                                <el-col span="12"  v-if="radio == 1">
+                                    <el-select v-model="cron" style="float: right" size="small">
+                                        <el-option label="每十五分钟" value="0 0/15 * * * ? "></el-option>
+                                        <el-option label="每半小时" value="0 0/30 * * * ? "></el-option>
+                                        <el-option label="每小时" value="0 0 0/1 * * ? "></el-option>
+                                        <el-option label="每天" value="0 0 0 1/1 * ? "></el-option>
+                                    </el-select>
+                                </el-col>
+                                <el-col span="12"  v-if="radio == 2">
+                                    <el-input v-model="cron" size="small" style="width: 80%;float: right" placeholder="Cron表达式"></el-input>
+                                </el-col>
+                            </el-row>
+                            <el-row style="padding-top: 50px">
+                                <el-button style="float: right" type="primary" @click="saveConfig">保存</el-button>
+                            </el-row>
+                        </el-col>
+                        <el-col span="16">
+                            <el-divider content-position="left">任务列表</el-divider>
+                            <div style="padding: 20px">
+                                <el-table :data="taskList.data">
+                                    <el-table-column label="用户UID" prop="uid" width="100"></el-table-column>
+                                    <el-table-column label="执行周期" prop="cron"></el-table-column>
+                                    <el-table-column label="状态" prop="status"></el-table-column>
+                                    <el-table-column label="操作" width="200">
+                                        <template slot-scope="scope">
+                                            <el-button circle @click="operation(scope.row.id,scope.row.statusCode)"><li style="width: 15px;height: 15px" :class="scope.row.statusCode==1?'fa fa-pause':'fa fa-play'"></li></el-button>
+                                            <el-button circle icon="el-icon-delete" @click="deleteTask(scope.row.id)"></el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </el-col>
+                    </el-row>
                 </div>
+            </div>
 
-                <div :class="showMgr">
+            <div :class="showMgr">
 
-                </div>
-            </el-col>
-        </el-row>
-
+            </div>
+        </el-col>
+    </el-row>
 
 </div>
 
@@ -140,8 +143,33 @@
             this.loadTaskList();
         }
         ,methods:{
-            start(){
-                console.log("Lain")
+            deleteTask(id){
+                axios.post("/api/task/delete","taskId="+id).then(res=>{
+                    if(res.data.code == 500){
+                        this.$message({
+                            type:"warn",
+                            message:res.data.message
+                        })
+                    }
+                    this.loadTaskList();
+                })
+            },
+            operation(id,status){
+                let url ;
+                switch (status) {
+                    case 1:url="/api/task/pause"
+                        break
+                    default:url = "/api/task/start";
+                }
+                axios.post(url,"taskId="+id).then(res=>{
+                    if(res.data.code == 500){
+                        this.$message({
+                            type:"warn",
+                            message:res.data.message
+                        })
+                    }
+                    this.loadTaskList();
+                })
             },
             loadTaskList(){
                 axios.get("/api/getTaskList",{

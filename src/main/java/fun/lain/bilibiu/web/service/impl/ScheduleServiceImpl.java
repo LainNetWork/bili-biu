@@ -33,33 +33,49 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public void createAndStart(Long taskId) throws SchedulerException {
+    public void start(Long taskId) {
         SaveTask task = saveTaskMapper.selectById(taskId);
         createAndStart(task);
     }
 
-    private void createAndStart(SaveTask task) throws SchedulerException {
-        //        Trigger.TriggerState triggerState = scheduler.getTriggerState(getTriggerKey(taskId));
-
+    private void createAndStart(SaveTask task){
         if(task==null){
             throw new LainException("任务不存在！");
         }
+        //判断调度中是否存在
+        try {
+            if(scheduler.checkExists(getJobKey(task.getId()))){
+                resume(task.getId());
+            }else{
+                create(task);
+            }
+        } catch (SchedulerException e) {
+            throwException("定时任务调度错误！",e);
+        }
+    }
+    @Override
+    public void create(SaveTask task) {
         JobDetail job = JobBuilder.newJob().ofType(MonitorTask.class).withIdentity(getJobKey(task.getId())).build();
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
                 .cronSchedule(task.getCron()).withMisfireHandlingInstructionDoNothing();
-
         Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity(getTriggerKey(task.getId()))
                 .withSchedule(cronScheduleBuilder)
-
                 .build();
         job.getJobDataMap().put("task",task);
-        scheduler.scheduleJob(job,trigger);
-        saveTaskMapper.updateById(SaveTask.builder()
-                .id(task.getId())
-                .status(SaveTask.Status.RUNNING)
-                .build());
 
+        try {
+            scheduler.scheduleJob(job,trigger);
+            saveTaskMapper.updateById(SaveTask.builder()
+                    .id(task.getId())
+                    .status(SaveTask.Status.RUNNING)
+                    .build());
+        } catch (SchedulerException e) {
+            if(e instanceof ObjectAlreadyExistsException){
+                throwException("任务正在运行中!",e);
+            }
+            throwException("启动定时任务失败!",e);
+        }
     }
 
     @Override
@@ -71,8 +87,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     .status(SaveTask.Status.RUNNING)
                     .build());
         } catch (SchedulerException e) {
-            log.error("恢复定时任务失败!",e);
-            throw new LainException("恢复定时任务失败!");
+            throwException("恢复定时任务失败!",e);
         }
     }
 
@@ -86,8 +101,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     .status(SaveTask.Status.PAUSE)
                     .build());
         } catch (SchedulerException e) {
-            log.info("暂停定时任务失败！");
-            throw new LainException("暂停定时任务失败！");
+            throwException("暂停定时任务失败！",e);
         }
     }
 
@@ -97,24 +111,23 @@ public class ScheduleServiceImpl implements ScheduleService {
             scheduler.deleteJob(getJobKey(taskId));
             saveTaskMapper.deleteById(taskId);
         } catch (SchedulerException e) {
-            log.error("删除定时任务失败!",e);
-            throw new LainException("删除定时任务失败!");
+            throwException("删除定时任务失败!",e);
         }
     }
 
     @Override
     public void initTask() {
-        List<SaveTask> taskList = saveTaskMapper.selectList(new QueryWrapper<SaveTask>().ne("status",SaveTask.Status.CREATE));
+        List<SaveTask> taskList = saveTaskMapper.selectList(new QueryWrapper<SaveTask>()
+                .ne("status",SaveTask.Status.CREATE)
+                .ne("status",SaveTask.Status.PAUSE)
+        );
         for(SaveTask task:taskList){
-            try {
-                createAndStart(task);
-            } catch (SchedulerException e) {
-                log.error("任务%d启动失败！",task.getId());
-                saveTaskMapper.updateById(SaveTask.builder()
-                        .id(task.getId())
-                        .status(SaveTask.Status.ERROR)
-                        .build());
-            }
+            createAndStart(task);
         }
+    }
+
+    private void throwException(String message,Exception e){
+        log.error(message,e);
+        throw new LainException(message);
     }
 }

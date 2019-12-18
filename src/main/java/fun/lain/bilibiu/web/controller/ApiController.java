@@ -35,21 +35,21 @@ public class ApiController {
         return backApiService.getTaskList(index,size);
     }
 
-    @GetMapping("/task/start")
-    public Echo start(Long taskId){
+    @PostMapping("/task/start")
+    public Echo start(@RequestParam("taskId") Long taskId){
         backApiService.start(taskId);
         return Echo.success();
     }
 
-    @GetMapping("/task/pause")
+    @PostMapping("/task/pause")
     public Echo pause(Long taskId){
         backApiService.pause(taskId);
         return Echo.success();
     }
 
-    @GetMapping("/task/delete")
+    @PostMapping("/task/delete")
     public Echo delete(Long taskId){
-        backApiService.pause(taskId);
+        backApiService.delete(taskId);
         return Echo.success();
     }
 }

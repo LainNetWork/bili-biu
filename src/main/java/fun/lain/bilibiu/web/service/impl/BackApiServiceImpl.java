@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronSequenceGenerator;
@@ -148,13 +149,7 @@ public class BackApiServiceImpl implements BackApiService {
 
     @Override
     public void start(Long taskId) {
-        try {
-            scheduleService.createAndStart(taskId);
-        } catch (SchedulerException e) {
-            log.error("创建定时任务失败!",e);
-            throw new LainException("创建定时任务失败!");
-        }
-
+        scheduleService.start(taskId);
     }
 
     @Override
@@ -170,8 +165,9 @@ public class BackApiServiceImpl implements BackApiService {
     private String getStatus(int code){
         switch (code){
             case 0 : return "创建";
-            case 1 : return "停止";
-            case 2 : return  "运行";
+            case 1 : return "运行";
+            case 2 : return "暂停";
+            case 3 : return "异常";
         }
         return "状态异常";
     }

@@ -62,7 +62,6 @@ public class Echo {
         }
 
         echo.setMessage(message);
-        echo.setCode(Code.SUCCESS.getCode());
         echo.setData(data);
         return echo;
     }
