@@ -10,8 +10,10 @@ import fun.lain.bilibiu.common.app.mapper.AppInfoMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -66,5 +68,14 @@ public class ApiServiceTest {
     @Test
     public void test6(){
         System.out.println(appInfoMapper.ifTableInit());
+    }
+
+    @Test
+    public void test7(){
+        CronSequenceGenerator generator = new CronSequenceGenerator("0/30 * * * * ?");
+        Date date = new Date();
+        Date date1 = generator.next(date);
+        Date date2 = generator.next(date1);
+        System.out.println(date2.getTime() - date1.getTime());
     }
 }

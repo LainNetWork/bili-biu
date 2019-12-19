@@ -83,8 +83,15 @@ public class BackApiServiceImpl implements BackApiService {
         if(!CronSequenceGenerator.isValidExpression(param.getCron())){
             return Echo.error("不合法的Cron表达式！");
         }
-        //TODO 判断周期，不得小于限制时间
-
+//        //TODO 判断周期，不得小于限制时间
+//        CronSequenceGenerator generator = new CronSequenceGenerator("0/30 * * * * ?");
+//        Date date = new Date();
+//        Date date1 = generator.next(date);
+//        Date date2 = generator.next(date1);
+//
+//        if((date2.getTime() - date1.getTime())<5*60*1000){//周期不得小于5min
+//            return Echo.error("时间周期的最小间隔不得小于5分钟！");
+//        }
         BiliUserInfo info = null;
         String cookie = "";
         switch (param.getUserInfoType())

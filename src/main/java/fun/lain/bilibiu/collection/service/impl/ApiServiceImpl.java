@@ -150,6 +150,9 @@ public class ApiServiceImpl implements ApiService {
         //校验
         JSONObject data = cidInfoJson.getBody();
         if(cidInfoJson.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
+            if(data.getInteger("code")==-404){
+                return;
+            }
             throw new RuntimeException("接口请求异常！");
         }
         JSONArray array = (JSONArray) JSONPath.read(data.toJSONString(),"$.data");
