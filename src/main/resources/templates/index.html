@@ -68,6 +68,7 @@
                                 </el-col>
                                 <el-col span="12"  v-if="radio == 1">
                                     <el-select v-model="cron" style="float: right" size="small">
+                                        <el-option label="测试用，每30秒" value="0/30 * * * * ? "></el-option>
                                         <el-option label="每十五分钟" value="0 0/15 * * * ? "></el-option>
                                         <el-option label="每半小时" value="0 0/30 * * * ? "></el-option>
                                         <el-option label="每小时" value="0 0 0/1 * * ? "></el-option>
@@ -87,12 +88,13 @@
                             <div style="padding: 20px">
                                 <el-table :data="taskList.data">
                                     <el-table-column label="用户UID" prop="uid" width="100"></el-table-column>
-                                    <el-table-column label="执行周期" prop="cron"></el-table-column>
-                                    <el-table-column label="状态" prop="status"></el-table-column>
-                                    <el-table-column label="操作" width="200">
+                                    <el-table-column label="执行周期" prop="cron"width="150"></el-table-column>
+                                    <el-table-column label="状态" prop="status" width="100"></el-table-column>
+                                    <el-table-column label="操作">
                                         <template slot-scope="scope">
                                             <el-button circle @click="operation(scope.row.id,scope.row.statusCode)"><li style="width: 15px;height: 15px" :class="scope.row.statusCode==1?'fa fa-pause':'fa fa-play'"></li></el-button>
                                             <el-button circle icon="el-icon-delete" @click="deleteTask(scope.row.id)"></el-button>
+                                            <el-button circle icon="el-icon-edit-outline" @click="openDetail(scope.row.id)"></el-button>
                                         </template>
                                     </el-table-column>
                                 </el-table>
@@ -101,7 +103,9 @@
                     </el-row>
                 </div>
             </div>
-
+            <el-dialog :visible="showDetail">
+                ？
+            </el-dialog>
             <div :class="showMgr">
 
             </div>
@@ -115,6 +119,7 @@
     var app = new Vue({
         el:'#app',
         data:{
+            showDetail:false,
             radio:1,
             cookie:'',
             showConfig:'',
@@ -143,6 +148,10 @@
             this.loadTaskList();
         }
         ,methods:{
+            openDetail(taskId){
+                //获取任务详情
+                this.showDetail = true;
+            },
             deleteTask(id){
                 axios.post("/api/task/delete","taskId="+id).then(res=>{
                     if(res.data.code == 500){
@@ -232,7 +241,7 @@
                 };
                 axios.post("/api/saveTask",form).then(res =>{
                     if(res.data.code ==200){
-
+                        this.loadTaskList();
                     }else{
                         this.$message({
                             type:"warning",
