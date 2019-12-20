@@ -29,7 +29,7 @@ CREATE TABLE `cache_part_task` (
   `status` int(1) DEFAULT NULL COMMENT '状态',
   `message` varchar(255) DEFAULT NULL COMMENT '状态信息',
   PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE `app_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键，无意义',
@@ -40,4 +40,4 @@ CREATE TABLE `app_info` (
 
 
 
-INSERT  INTO `app_Info` (`initState`,`version`) VALUES (1,'Ver.0.01');
+INSERT  INTO `app_Info` (`initState`,`version`) VALUES (1,'Ver_0.01');

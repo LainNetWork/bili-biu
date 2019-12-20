@@ -28,7 +28,7 @@ import java.util.List;
 @Service("apiService")
 public class ApiServiceImpl implements ApiService {
     @Value("${lain.user-agent}")
-    public String userAgent;
+    private String userAgent;
 
     @Autowired
     RestTemplate restTemplate;

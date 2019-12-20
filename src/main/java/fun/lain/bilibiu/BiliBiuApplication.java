@@ -63,14 +63,18 @@ public class BiliBiuApplication{
      * 初始化逻辑
      */
     @PostConstruct
-    public void init(){
-        //TODO 之后可以添加数据库版本升级逻辑判断
+    public void init() throws Exception {
+
         if(!appService.ifTableInit()){
             appService.InitTable();
             log.info("数据库初始化完毕！");
         }
+        //数据库版本升级逻辑判断
+        if(appService.ifNeedUpdate()){
+            appService.updateTable();
+        }
         //初始化调度器
-        //TODO 在启动后初始化调度器，构建触发器和任务
+        //在启动后初始化调度器，构建触发器和任务
         scheduleService.initTask();
 
     }
