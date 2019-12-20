@@ -61,6 +61,7 @@ public class AppServiceImpl extends ServiceImpl<AppInfoMapper, AppInfoEntity> im
             runner.setThrowWarning(true);
             sql = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(path));
             runner.runScript(sql);
+            connection.commit();
         } catch (Exception e) {
             log.error("初始化失败！",e);
             connection.rollback();
