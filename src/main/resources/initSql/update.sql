@@ -5,4 +5,6 @@ CREATE TABLE if not exists `cache_media_info`  (
      PRIMARY KEY (`id`)
 );
 
-UPDATE app_info SET version = 'Ver_0.03';
+ALTER TABLE cache_part_task ADD UNIQUE(cid);
+
+UPDATE app_info SET version = 'Ver_0.04';

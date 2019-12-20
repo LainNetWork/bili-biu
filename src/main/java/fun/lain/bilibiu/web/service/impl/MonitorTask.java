@@ -34,7 +34,6 @@ public class MonitorTask implements Job {
         log.info("进入定时任务！");
         //获取此任务中用户要监控的收藏夹信息
         List<SaveCollection> list = saveCollectionDao.selectList(new QueryWrapper<SaveCollection>().eq("taskId",task.getId()));
-        List<CachePartTask> newPartList = new ArrayList<>();
         for(SaveCollection collection : list){
             List<CollectionMedia> medias = apiService.getAllMediaInCollection(collection.getCollectionId(),task.getCookie());
             for (CollectionMedia media : medias){
@@ -47,12 +46,12 @@ public class MonitorTask implements Job {
                     //如果数据库中已有该片段Id，则将其筛选出去
                     List<Long> ids = result.stream().map(CachePartTask::getCid).collect(Collectors.toList());
                     List<CachePartTask> newParts  = parts.stream().filter(part->!ids.contains(part.getCid())).collect(Collectors.toList());
-                    newPartList.addAll(newParts);
+                    if(CollectionUtils.isNotEmpty(newParts)){
+                        cachePartTaskMapper.saveOrUpdateBatch(newParts);
+                    }
                 }
             }
         }
-        //TODO 入库(注意insert可能会和其他任务冲突，需要做锁)
-        log.info(newPartList.toString());
     }
 
     private List<CachePartTask> buildTasks(CollectionMedia media){
@@ -65,6 +64,7 @@ public class MonitorTask implements Job {
                     .avid(media.getId())
                     .cid(part.getCid())
                     .title(part.getPartName())
+                    .avTitle(media.getTitle())
                     .quality(part.getAcceptQuality())
                     .build());
         }
