@@ -1,4 +1,4 @@
-package fun.lain.bilibiu.collection.entity;
+package fun.lain.bilibiu.cache.tunnel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BiliUserInfo {
-    private String name;
-    private String face;
-    private Long mid;
+@Builder
+public class CachePartResult {
+    private String message;
+    private Exception exception;
 }

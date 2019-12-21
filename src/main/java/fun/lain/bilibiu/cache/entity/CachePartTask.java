@@ -35,7 +35,7 @@ public class CachePartTask {
     //已缓存的大小
     private long cacheSize;//初始值为0
     //状态
-    private Integer status;
+    private int status;
     //状态信息
     private String message;
 }

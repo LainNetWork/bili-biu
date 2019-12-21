@@ -1,7 +1,6 @@
 package fun.lain.bilibiu;
 
 import fun.lain.bilibiu.cache.entity.CachePartTask;
-import fun.lain.bilibiu.cache.service.CacheTask;
 import fun.lain.bilibiu.collection.entity.CollectionMedia;
 import fun.lain.bilibiu.collection.entity.MediaPart;
 import fun.lain.bilibiu.collection.entity.UserCollection;
@@ -51,8 +50,8 @@ public class ApiServiceTest {
                 .size(part.getDownLoadInfos().get(0).getSize())
                 .build();
 
-        Thread t = new Thread(new CacheTask(task));
-        t.start();
+////        Thread t = new Thread(new CacheTask(task));
+//        t.start();
     }
 
     @Test

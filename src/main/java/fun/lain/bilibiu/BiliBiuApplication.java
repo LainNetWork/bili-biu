@@ -1,21 +1,11 @@
 package fun.lain.bilibiu;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import fun.lain.bilibiu.cache.entity.CachePartTask;
-import fun.lain.bilibiu.cache.service.CacheTask;
-import fun.lain.bilibiu.collection.entity.CollectionMedia;
-import fun.lain.bilibiu.collection.entity.MediaPart;
-import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.app.service.AppService;
-import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import fun.lain.bilibiu.web.service.ScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
-import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.nio.charset.Charset;
-import java.util.List;
 
 @SpringBootApplication
 @MapperScan(basePackages = "fun.lain.**.mapper")

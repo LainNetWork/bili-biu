@@ -1,10 +1,12 @@
 package fun.lain.bilibiu.web.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import fun.lain.bilibiu.cache.task.LainJob;
+import fun.lain.bilibiu.cache.task.LainTask;
+import fun.lain.bilibiu.cache.task.MonitorTask;
 import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
-import fun.lain.bilibiu.web.service.BackApiService;
 import fun.lain.bilibiu.web.service.ScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
@@ -55,7 +57,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
     @Override
     public void create(SaveTask task) {
-        JobDetail job = JobBuilder.newJob().ofType(MonitorTask.class).withIdentity(getJobKey(task.getId())).build();
+        JobDetail job = JobBuilder.newJob().ofType(LainJob.class).withIdentity(getJobKey(task.getId())).build();
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder
                 .cronSchedule(task.getCron()).withMisfireHandlingInstructionDoNothing();
         Trigger trigger = TriggerBuilder.newTrigger()

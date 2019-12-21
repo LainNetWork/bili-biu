@@ -65,9 +65,9 @@ public class ApiServiceImpl implements ApiService {
         if(response.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
             throw new RuntimeException("接口请求异常！");
         }
-        ArrayList<Object> userInfo = (ArrayList) JSONPath.eval(data,"$.data['uname','mid','face']");
+        ArrayList<Object> userInfo = (ArrayList) JSONPath.eval(data,"$.data['name','mid','face']");
         return BiliUserInfo.builder()
-                .uname((String)userInfo.get(0))
+                .name((String)userInfo.get(0))
                 .mid(NumberUtils.createLong(userInfo.get(1).toString()))
                 .face((String)userInfo.get(2))
                 .build();
@@ -79,7 +79,7 @@ public class ApiServiceImpl implements ApiService {
         ResponseEntity<JSONObject> response = restTemplate.exchange(ApiVar.USER_COLLECT_LIST,HttpMethod.GET,req,JSONObject.class,uid);
         JSONObject data  = response.getBody();
         if(response.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
-            throw new LainException("接口请求异常！");
+            throw new RuntimeException("接口请求异常！");
         }
         data = data.getJSONObject("data");
         if(data==null){
@@ -159,7 +159,6 @@ public class ApiServiceImpl implements ApiService {
         List<MediaPart> mediaParts = array.toJavaList(MediaPart.class);
         mediaParts.forEach(part->{
             part.setId(media.getId());
-//            getDownloadInfo(part,cookies);
         });
         media.setParts(mediaParts);
     }
@@ -180,7 +179,7 @@ public class ApiServiceImpl implements ApiService {
             part.setQualityName(tempPart.getQualityName());
 
         }else{
-            //TODO 抛出异常
+            throw new RuntimeException("参数错误！");
         }
     }
 
@@ -191,13 +190,12 @@ public class ApiServiceImpl implements ApiService {
             ResponseEntity<JSONObject> res = restTemplate.exchange(ApiVar.MEDIA_DOWNLOAD_INFO,HttpMethod.GET,req,JSONObject.class,id,cid,112);
             JSONObject data = res.getBody();
             if(res.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
-                throw new RuntimeException(" ！");
+                throw new RuntimeException(" 接口错误！");
             }
             MediaPart tempPart = JSONObject.toJavaObject(data.getJSONObject("data"),MediaPart.class);
             return  tempPart;
         }else{
-            //TODO 抛出异常
+            throw new RuntimeException("参数错误！");
         }
-        return null;
     }
 }

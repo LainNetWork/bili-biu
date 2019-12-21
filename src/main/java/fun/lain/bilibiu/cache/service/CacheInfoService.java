@@ -1,29 +1,23 @@
 package fun.lain.bilibiu.cache.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
 
-public interface CacheInfoService {
+import java.util.List;
 
-    void createTask(CachePartTask task);
-    /**
-     * 根据id获取任务
-     * @param id
-     * @return
-     */
-    CachePartTask getPartTaskById(Long id);
+public interface CacheInfoService extends IService<CachePartTask> {
 
-    /**
-     * 暂停缓存任务
-     * @param id
-     */
-    void pauseTask(Long id);
 
-    /**
-     * 开始缓存任务
-     * @param id
-     */
-    void startTask(Long id);
+    Integer getTaskStatus(long taskId);
 
-    void updateTaskInfo(CachePartTask task);
+    int saveOrUpdateBatch( List<CachePartTask> list);
+
+    int run(long taskId);
+
+    int pause(long taskId);
+
+    int finish(long taskId);
+
+    int updateCacheSize(long taskId,long cacheSize);
 
 }

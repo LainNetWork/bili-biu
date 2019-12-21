@@ -1,4 +1,4 @@
-package fun.lain.bilibiu.collection.entity;
+package fun.lain.bilibiu.cache.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BiliUserInfo {
-    private String name;
-    private String face;
-    private Long mid;
+@Builder
+public class CachePartTaskParam {
+    private String cookie;
+    private long taskId;
 }

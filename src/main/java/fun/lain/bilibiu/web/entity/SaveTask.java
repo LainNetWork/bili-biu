@@ -15,6 +15,8 @@ import javax.persistence.Table;
  * 删除某个收藏夹的监视，并不会缓存的文件，也不会将收藏夹中已经缓存的视频删除
  * 缓存的mid号是独立出来的，除非手动在列表中将缓存清除重下
  * 至于收藏夹，av号，cid之间的关系，在数据库中维持
+ *
+ * 19-12-21更新：改造为通用任务类
  * @author Lain
  * @date 2019-12-01
  */
@@ -35,11 +37,14 @@ public class SaveTask {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    //用户UID，目前只支持单账号,用cookie也要先获取用户信息，以uid为准
-    //即使是多账号，一个账号也应该只能保存一个任务，添加，删除收藏夹监视都是在一个任务里的
-    private Long userId;
+    private String beanName;
 
-    private String cookie;
+    //任务参数，采用Json方式传递
+    private String param;
+
+    //    private Long userId;
+    //
+    //    private String cookie;
 
     /**
      * cron表达式，代表检测收藏夹更新的周期

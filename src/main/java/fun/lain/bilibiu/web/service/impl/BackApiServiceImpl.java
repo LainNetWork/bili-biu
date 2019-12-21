@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import fun.lain.bilibiu.cache.service.CacheInfoService;
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
@@ -39,12 +40,23 @@ public class BackApiServiceImpl implements BackApiService {
     private ApiService apiService;
 
     @Autowired
-    ScheduleService scheduleService;
+    private ScheduleService scheduleService;
 
     @Resource
-    SaveTaskMapper saveTaskMapper;
+    private SaveTaskMapper saveTaskMapper;
     @Resource
-    SaveCollectionMapper saveCollectionMapper;
+    private SaveCollectionMapper saveCollectionMapper;
+
+
+    @Resource
+    private CacheInfoService cacheInfoService;
+
+    public void getMediaList(){
+
+    }
+
+
+
     @Override
     public Echo getUserCollection(String json) {
         JSONObject jsonObject = JSONObject.parseObject(json) ;
@@ -108,11 +120,14 @@ public class BackApiServiceImpl implements BackApiService {
             default:return Echo.error("参数异常！");
         }
 
+        JSONObject taskParam = new JSONObject();
+        taskParam.put("userInfo",info);
+        taskParam.put("cookie",cookie);
         //保存任务
         SaveTask task = SaveTask.builder()
-                .cookie(cookie)
+                .param(taskParam.toJSONString())
+                .beanName("monitorTask")//TODO 之后做任务分类，改为枚举
                 .cron(param.getCron())
-                .userId(info.getMid())
                 //获取头像
                 .status(SaveTask.Status.CREATE)
                 .build();
@@ -136,10 +151,11 @@ public class BackApiServiceImpl implements BackApiService {
         IPage<SaveTask> list = saveTaskMapper.selectPage(page,new QueryWrapper<SaveTask>());
         List<SaveTaskDTO> dtoList = new ArrayList<>();
         list.getRecords().forEach(task ->{
+            JSONObject param = JSONObject.parseObject(task.getParam());
             SaveTaskDTO dto = SaveTaskDTO.builder()
                     .cron(task.getCron())
                     .id(task.getId())
-                    .uid(task.getUserId())
+                    .info(JSONObject.toJavaObject(param.getJSONObject("userInfo"),BiliUserInfo.class))
                     .status(getStatus(task.getStatus()))
                     .statusCode(task.getStatus())
                     .build();

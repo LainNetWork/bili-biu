@@ -87,7 +87,12 @@
                             <el-divider content-position="left">任务列表</el-divider>
                             <div style="padding: 20px">
                                 <el-table :data="taskList.data">
-                                    <el-table-column label="用户UID" prop="uid" width="100"></el-table-column>
+
+                                    <el-table-column label="用户昵称" prop="info.name" width="100">
+<!--                                        <template slot-scope="scope">-->
+<!--                                            <el-avatar :src="scope.row.info.face"></el-avatar>-->
+<!--                                        </template>-->
+                                    </el-table-column>
                                     <el-table-column label="执行周期" prop="cron"width="150"></el-table-column>
                                     <el-table-column label="状态" prop="status" width="100"></el-table-column>
                                     <el-table-column label="操作">

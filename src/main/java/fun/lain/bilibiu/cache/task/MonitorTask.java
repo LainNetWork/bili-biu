@@ -1,5 +1,6 @@
-package fun.lain.bilibiu.web.service.impl;
+package fun.lain.bilibiu.cache.task;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
 import fun.lain.bilibiu.cache.mapper.CachePartTaskMapper;
@@ -12,36 +13,69 @@ import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.mapper.SaveCollectionMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Slf4j
-public class MonitorTask implements Job {
+@Component("monitorTask")
+public class MonitorTask implements LainTask {
+//    @Override
+//    public void execute(JobExecutionContext context) throws JobExecutionException {
+//        //获取需要的SpringBean
+//
+//    }
+//                    //临时测试，构建下载
+//                    List<CachePartTask> list1= cachePartTaskMapper.selectList(new QueryWrapper<CachePartTask>()
+//                            .eq("status", CachePartTaskVar.WAIT.getCode())
+//                            .last("LIMIT 5")
+//
+//                    );
+//                    list1.forEach(t->{
+//                        CacheTask cacheTask = new CacheTask(CachePartTaskParam.builder()
+//                                .taskId(t.getId())
+//                                .cookie(task.getCookie())
+//                                .build());
+//                        CacheTunnel.submit(cacheTask);
+//                    });
+
+    @Resource
+    private SaveCollectionMapper saveCollectionMapper;
+
+    @Resource
+    private CachePartTaskMapper cachePartTaskMapper;
+
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-        //获取需要的SpringBean
-        SaveCollectionMapper saveCollectionDao = BeanUtil.getBean(SaveCollectionMapper.class);
-        CachePartTaskMapper cachePartTaskMapper = BeanUtil.getBean(CachePartTaskMapper.class);
+    public void execute(String param) throws Exception{
+        JSONObject jsonParam = JSONObject.parseObject(param);
+        Long taskId = jsonParam.getLong("taskId");
+        if(taskId == null){
+            throw new RuntimeException("任务Id不存在！");
+        }
+        String cookie = jsonParam.getString("cookie");
         ApiService apiService = BeanUtil.getBean(ApiService.class);
 
-        SaveTask task = (SaveTask) context.getMergedJobDataMap().get("task");
+//        SaveTask task = (SaveTask) context.getMergedJobDataMap().get("task");
         log.info("进入定时任务！");
         //获取此任务中用户要监控的收藏夹信息
-        List<SaveCollection> list = saveCollectionDao.selectList(new QueryWrapper<SaveCollection>().eq("taskId",task.getId()));
+        List<SaveCollection> list = saveCollectionMapper.selectList(new QueryWrapper<SaveCollection>().eq("taskId",taskId));
         for(SaveCollection collection : list){
-            List<CollectionMedia> medias = apiService.getAllMediaInCollection(collection.getCollectionId(),task.getCookie());
+            List<CollectionMedia> medias = apiService.getAllMediaInCollection(collection.getCollectionId(),cookie);
             for (CollectionMedia media : medias){
                 List<CachePartTask> parts = buildTasks(media);
                 if(CollectionUtils.isNotEmpty(parts)){
                     List<CachePartTask> result = cachePartTaskMapper.selectList(
                             new QueryWrapper<CachePartTask>()
-                                .in("cid",parts.stream().map(CachePartTask::getCid).collect(Collectors.toList()))
+                                    .in("cid",parts.stream().map(CachePartTask::getCid).collect(Collectors.toList()))
                     );
                     //如果数据库中已有该片段Id，则将其筛选出去
                     List<Long> ids = result.stream().map(CachePartTask::getCid).collect(Collectors.toList());
@@ -53,6 +87,7 @@ public class MonitorTask implements Job {
             }
         }
     }
+
 
     private List<CachePartTask> buildTasks(CollectionMedia media){
         List<CachePartTask> cachePartTasks = new ArrayList<>();
