@@ -11,6 +11,7 @@ import fun.lain.bilibiu.cache.var.CachePartTaskVar;
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,7 @@ public class CachePushTask implements LainTask{
             SaveTask saveTask= saveTaskMapper.selectById(task.getTaskId());
             if(saveTask == null){
                 errorList.add(saveTask);
+                continue;
             }
             BiliUserInfo info = JSONObject.toJavaObject(JSONObject.parseObject(saveTask.getParam()).getJSONObject("userInfo"), BiliUserInfo.class);
             CacheTask cacheTask = new CacheTask(CachePartTaskParam.builder()
@@ -44,6 +46,9 @@ public class CachePushTask implements LainTask{
                     .taskId(task.getId())
                     .build());
             CacheTunnel.submit(cacheTask);
+        }
+        if(CollectionUtils.isNotEmpty(errorList)){
+            throw new Exception("部分任务已失去用户信息！已跳过处理");
         }
     }
 }
