@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BiliUserInfo {
+    private String cookie;
     private String name;
     private String face;
     private Long mid;

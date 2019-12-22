@@ -8,15 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Table;
-
 /**
+ * 19-12-21更新：改造为通用任务类
+ *
  * 缓存配置信息实体类
  * 删除某个收藏夹的监视，并不会缓存的文件，也不会将收藏夹中已经缓存的视频删除
  * 缓存的mid号是独立出来的，除非手动在列表中将缓存清除重下
  * 至于收藏夹，av号，cid之间的关系，在数据库中维持
  *
- * 19-12-21更新：改造为通用任务类
  * @author Lain
  * @date 2019-12-01
  */
@@ -51,6 +50,7 @@ public class SaveTask {
      */
     private String cron;
 
-    //删除就直接从数据库中删除，不做标记
+    private Integer type;
+    //任务执行状态，删除就直接从数据库中删除，不做标记
     private Integer status;
 }

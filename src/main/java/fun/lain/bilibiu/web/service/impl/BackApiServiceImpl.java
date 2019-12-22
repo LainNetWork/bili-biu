@@ -2,28 +2,27 @@ package fun.lain.bilibiu.web.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import fun.lain.bilibiu.cache.entity.CachePartTask;
+import fun.lain.bilibiu.cache.entity.MediaDTO;
 import fun.lain.bilibiu.cache.service.CacheInfoService;
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
-import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.web.entity.SaveCollection;
 import fun.lain.bilibiu.web.entity.SaveTask;
-import fun.lain.bilibiu.web.entity.SaveTaskParam;
-import fun.lain.bilibiu.web.entity.dto.SaveTaskDTO;
+import fun.lain.bilibiu.web.dto.SaveTaskParam;
+import fun.lain.bilibiu.web.dto.SaveTaskDTO;
 import fun.lain.bilibiu.web.mapper.SaveCollectionMapper;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import fun.lain.bilibiu.web.service.BackApiService;
 import fun.lain.bilibiu.web.service.ScheduleService;
+import fun.lain.bilibiu.web.var.SaveTaskType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.quartz.ObjectAlreadyExistsException;
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
@@ -47,12 +46,13 @@ public class BackApiServiceImpl implements BackApiService {
     @Resource
     private SaveCollectionMapper saveCollectionMapper;
 
-
     @Resource
     private CacheInfoService cacheInfoService;
 
-    public void getMediaList(){
 
+    @Override
+    public IPage<MediaDTO> getMediaList(int index, int size){
+        return cacheInfoService.getMediaList(index,size);
     }
 
 
@@ -95,7 +95,7 @@ public class BackApiServiceImpl implements BackApiService {
         if(!CronSequenceGenerator.isValidExpression(param.getCron())){
             return Echo.error("不合法的Cron表达式！");
         }
-//        //TODO 判断周期，不得小于限制时间
+//        //TO DO 判断周期，不得小于限制时间
 //        CronSequenceGenerator generator = new CronSequenceGenerator("0/30 * * * * ?");
 //        Date date = new Date();
 //        Date date1 = generator.next(date);
@@ -117,6 +117,8 @@ public class BackApiServiceImpl implements BackApiService {
             case 1:
                 info = apiService.getUserInfo(param.getUserIdentical());
                 cookie = param.getUserIdentical();
+                info.setCookie(cookie);
+                break;
             default:return Echo.error("参数异常！");
         }
 
@@ -129,6 +131,7 @@ public class BackApiServiceImpl implements BackApiService {
                 .beanName("monitorTask")//TODO 之后做任务分类，改为枚举
                 .cron(param.getCron())
                 //获取头像
+                .type(SaveTaskType.WORK_TASK.getCode())
                 .status(SaveTask.Status.CREATE)
                 .build();
         saveTaskMapper.insert(task);
@@ -148,7 +151,7 @@ public class BackApiServiceImpl implements BackApiService {
     @Override
     public Echo getTaskList(Integer index,Integer size) {
         Page<SaveTask> page = new Page<>(index,size);
-        IPage<SaveTask> list = saveTaskMapper.selectPage(page,new QueryWrapper<SaveTask>());
+        IPage<SaveTask> list = saveTaskMapper.selectPage(page,new QueryWrapper<SaveTask>().ne("type",SaveTaskType.SYSTEM_TASK.getCode()));
         List<SaveTaskDTO> dtoList = new ArrayList<>();
         list.getRecords().forEach(task ->{
             JSONObject param = JSONObject.parseObject(task.getParam());

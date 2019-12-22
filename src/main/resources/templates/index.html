@@ -112,7 +112,36 @@
                 ？
             </el-dialog>
             <div :class="showMgr">
+                <el-table :data="mediaList.data"
+                          row-key="id"
+                          border
+                >
+                    <el-table-column type="expand">
+                        <template slot-scope="props">
+                            <el-table :data="props.row.parts">
+                                <el-table-column label="cid" prop="cid" width="100"></el-table-column>
+                                <el-table-column label="分p标题" prop="title" width="700"></el-table-column>
+                                <el-table-column label="大小" prop="size" width="100">
+                                    <template slot-scope="props">
+                                        {{props.row.size/(1024*1024) | sizeFilter}}MB
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="下载进度" prop="cacheSize">
+                                    <template slot-scope="props">
+                                        <el-progress :percentage="(props.row.cacheSize/props.row.size)*100"></el-progress>
+                                    </template>
 
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="id" label="av号" width="200px">
+                        <template slot-scope="props">
+                            av{{props.row.id}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="title" label="标题"></el-table-column>
+                </el-table>
             </div>
         </el-col>
     </el-row>
@@ -142,6 +171,12 @@
                 value:[],
                 ids:[]
             },
+            mediaList:{
+                data:[],
+                total:0,
+                size:12,
+                index:1,
+            }
 
         },
         watch:{
@@ -151,8 +186,35 @@
         },
         created(){
             this.loadTaskList();
+            this.getMediaList();
+        },
+        filters:{
+            sizeFilter(value){
+                value = Number(value);
+                return value.toFixed(2);
+            },
         }
         ,methods:{
+
+            getMediaList(){
+                axios.get("/api/cache/mediaList",{
+                    params: {
+                        size:this.mediaList.size,
+                        page:this.mediaList.index
+                    }
+                }).then(res =>{
+                    if(res.data.code==500){
+                        this.$message({
+                            type:"warn",
+                            message:res.data.message
+                        })
+                    }
+                    this.mediaList.data = res.data.data.records;
+                    this.mediaList.size = res.data.data.size;
+                    this.mediaList.total = res.data.data.total
+                    this.mediaList.index = res.data.data.current
+                });
+            },
             openDetail(taskId){
                 //获取任务详情
                 this.showDetail = true;
@@ -279,7 +341,9 @@
         height: 100%;
 
     }
-
+    .el-table__expanded-cell[class*=cell]{
+       padding: 0px;
+    }
     body{
         height: 100%;
     }

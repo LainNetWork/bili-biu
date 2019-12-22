@@ -1,4 +1,4 @@
-package fun.lain.bilibiu.web.entity;
+package fun.lain.bilibiu.web.dto;
 
 import lombok.Data;
 

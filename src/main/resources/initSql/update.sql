@@ -1,1 +1,1 @@
-UPDATE app_info SET version = 'Ver_0.01';
+UPDATE app_info SET version = 'Ver_0.02';

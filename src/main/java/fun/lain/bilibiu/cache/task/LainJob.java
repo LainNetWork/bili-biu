@@ -23,6 +23,9 @@ public class LainJob implements Job {
         }
         LainTask lainTask = (LainTask)object;
         JSONObject param = JSONObject.parseObject(saveTask.getParam());
+        if(param == null){
+            param = new JSONObject();
+        }
         param.put("taskId",saveTask.getId());
         try {
             lainTask.execute(param.toJSONString());

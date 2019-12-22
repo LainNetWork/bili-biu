@@ -1,4 +1,4 @@
-package fun.lain.bilibiu.web.entity.dto;
+package fun.lain.bilibiu.web.dto;
 
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import lombok.AllArgsConstructor;

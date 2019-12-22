@@ -4,10 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="fun.lain.bilibiu.cache.mapper.CachePartTaskMapper">
     <insert id="saveOrUpdateBatch" parameterType="java.util.List">
-        INSERT INTO cache_part_task ( avid,avTitle,cid,title,quality,size,cacheSize,status,message)
+        INSERT INTO cache_part_task ( avid,avTitle,cid,title,quality,size,cacheSize,taskId,status,message)
         VALUES
             <foreach collection="list" item="item" separator=",">
-                (#{item.avid},#{item.avTitle},#{item.cid},#{item.title},#{item.quality},#{item.size},#{item.cacheSize},#{item.status},#{item.message})
+                (#{item.avid},#{item.avTitle},#{item.cid},#{item.title},#{item.quality},#{item.size},#{item.cacheSize},#{item.taskId},#{item.status},#{item.message})
             </foreach>
         ON DUPLICATE KEY UPDATE
         avTitle = VALUES(avTitle),
@@ -17,8 +17,32 @@
         quality = VALUES(quality),
         size = VALUES(size),
         cacheSize = VALUES(cacheSize),
+        taskId = VALUES(taskId),
         status = VALUES(status),
         message = VALUES(message)
         ;
     </insert>
+
+    <select id="getMediaList" resultMap="collect">
+        select * from CACHE_PART_TASK a where a.id = (select top 1 id from CACHE_PART_TASK where avid = a.avid) order by a.id
+    </select>
+
+    <resultMap id="collect" type="fun.lain.bilibiu.cache.entity.MediaDTO">
+        <id column="avId" javaType="java.lang.Long" property="id"></id>
+        <result column="avTitle" property="title"></result>
+        <collection property="parts" ofType="fun.lain.bilibiu.cache.entity.CachePartTask" select="getPartsByMediaId" column="avid">
+            <id column="id" javaType="java.lang.Long" property="id"></id>
+            <result column="title" property="title"></result>
+            <result property="cid" column="cid"></result>
+            <result property="cacheSize" column="cacheSize"></result>
+            <result property="size" column="size"></result>
+            <result property="createTime" column="createTime"></result>
+            <result property="message" column="message"></result>
+            <result property="quality" column="quality"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getPartsByMediaId" resultType="fun.lain.bilibiu.cache.entity.CachePartTask">
+        select * from CACHE_PART_TASK where avid = #{id}
+    </select>
 </mapper>

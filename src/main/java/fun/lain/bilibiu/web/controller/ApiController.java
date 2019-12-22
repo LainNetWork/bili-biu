@@ -1,21 +1,32 @@
 package fun.lain.bilibiu.web.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
-import fun.lain.bilibiu.web.entity.SaveTaskParam;
+import fun.lain.bilibiu.web.dto.SaveTaskParam;
 import fun.lain.bilibiu.web.service.BackApiService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/api")
 public class ApiController {
     @Resource
     private BackApiService backApiService;
+
+
+
+    @GetMapping("/cache/mediaList")
+    public Echo getMediaCacheList(Integer page,Integer size){
+        return Echo.success().data(backApiService.getMediaList(page,size));
+    }
+
+//    @GetMapping("/cache/mediaDetail")
+//    public Echo getMediaCacheDetail(@NotNull(message = "av号不得为空！") Long avId){
+//
+//        return Echo.success().data(backApiService.getMediaDetail(avId));
+//    }
 
     //根据cookie获取用户收藏夹
     @PostMapping("/getCollection")

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +81,9 @@ public class MonitorTask implements LainTask {
                     //如果数据库中已有该片段Id，则将其筛选出去
                     List<Long> ids = result.stream().map(CachePartTask::getCid).collect(Collectors.toList());
                     List<CachePartTask> newParts  = parts.stream().filter(part->!ids.contains(part.getCid())).collect(Collectors.toList());
+                    newParts.forEach(task->{
+                        task.setTaskId(taskId);
+                    });
                     if(CollectionUtils.isNotEmpty(newParts)){
                         cachePartTaskMapper.saveOrUpdateBatch(newParts);
                     }
@@ -101,6 +105,7 @@ public class MonitorTask implements LainTask {
                     .title(part.getPartName())
                     .avTitle(media.getTitle())
                     .quality(part.getAcceptQuality())
+                    .createTime(new Date())
                     .build());
         }
         return cachePartTasks;

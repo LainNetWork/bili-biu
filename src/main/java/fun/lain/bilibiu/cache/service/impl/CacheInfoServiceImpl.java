@@ -1,11 +1,16 @@
 package fun.lain.bilibiu.cache.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
+import fun.lain.bilibiu.cache.entity.MediaDTO;
 import fun.lain.bilibiu.cache.mapper.CachePartTaskMapper;
 import fun.lain.bilibiu.cache.service.CacheInfoService;
 import fun.lain.bilibiu.cache.var.CachePartTaskVar;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,6 +46,15 @@ public class CacheInfoServiceImpl extends ServiceImpl<CachePartTaskMapper,CacheP
     @Override
     public int updateCacheSize(long taskId, long cacheSize) {
         return baseMapper.updateCacheSize(taskId,cacheSize);
+    }
+
+    @Override
+    public IPage<MediaDTO> getMediaList(int index, int size) {
+        Page page = new Page<MediaDTO>(index,size);
+        List list =  baseMapper.getMediaList(page);
+        page.setRecords(list);
+//        IPage<CachePartTask> pa = baseMapper.selectPage(page,new QueryWrapper<CachePartTask>().select("avId","avTitle","id"));
+        return page;
     }
 
 }

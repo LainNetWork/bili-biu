@@ -1,14 +1,13 @@
 package fun.lain.bilibiu.cache.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import fun.lain.bilibiu.cache.entity.MediaDTO;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-
+@Mapper
 public interface CachePartTaskMapper extends BaseMapper<CachePartTask> {
 
     /**
@@ -27,6 +26,8 @@ public interface CachePartTaskMapper extends BaseMapper<CachePartTask> {
     @Update("update cache_part_task set cacheSize = #{cacheSize} where id = #{taskId}")
     int updateCacheSize(@Param("taskId") long taskId,@Param("cacheSize")long cacheSize);
 
+    List<MediaDTO> getMediaList(Page page);
 
+    List<CachePartTask> getPartsByMediaId(long id);
 
 }

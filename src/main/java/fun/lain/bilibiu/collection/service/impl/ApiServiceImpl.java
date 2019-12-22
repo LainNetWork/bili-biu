@@ -49,7 +49,15 @@ public class ApiServiceImpl implements ApiService {
     public BiliUserInfo getUserInfo(String cookie) {
         HttpEntity req = getRequestEntity(cookie);
         ResponseEntity<JSONObject> response = restTemplate.exchange(ApiVar.USER_INFO_BY_COOKIES, HttpMethod.GET,req,JSONObject.class);
-        return handleUserInfo(response);
+        JSONObject data = response.getBody();
+        if(response.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
+            throw new RuntimeException("接口请求异常！");
+        }
+        ArrayList<Object> userInfo = (ArrayList) JSONPath.eval(data,"$.data['uname','mid','face']");
+        return BiliUserInfo.builder().name((String)userInfo.get(0))
+                .mid(NumberUtils.createLong(userInfo.get(1).toString()))
+                .face((String)userInfo.get(2))
+                .build();
     }
 
     @Override
@@ -72,6 +80,7 @@ public class ApiServiceImpl implements ApiService {
                 .face((String)userInfo.get(2))
                 .build();
     }
+
 
     @Override
     public List<UserCollection> getUserCollections(Long uid) {

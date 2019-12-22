@@ -111,10 +111,10 @@ public class CacheTask implements Callable<CachePartResult> {
 
                 } catch (IOException e) {
                     //IO错误，回退指针
-                    e.printStackTrace();
                     log.error("下载出错！",e);
                     file.seek(file.getFilePointer()-fragLength);
                     count--;
+                    continue;
                 }
                 length+=fragLength;//记录当前总字节大小
                 //记录长度

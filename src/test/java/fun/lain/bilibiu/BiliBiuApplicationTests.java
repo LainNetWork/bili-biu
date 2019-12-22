@@ -1,6 +1,9 @@
 package fun.lain.bilibiu;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
+import fun.lain.bilibiu.cache.mapper.CachePartTaskMapper;
+import fun.lain.bilibiu.cache.service.CacheInfoService;
 import fun.lain.bilibiu.common.BeanUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +15,12 @@ import javax.annotation.Resource;
 @SpringBootTest
 class BiliBiuApplicationTests {
 
+    @Resource
+    CachePartTaskMapper cachePartTaskMapper;
     @Test
     void contextLoads() {
-
-        System.out.println(BeanUtil.getBean(Environment.class).getProperty("spring.datasource.url"));
+        Page page = new Page(2,3);
+        System.out.println(cachePartTaskMapper.getMediaList(page));
     }
 
 }

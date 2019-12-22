@@ -8,6 +8,7 @@ import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import fun.lain.bilibiu.web.service.ScheduleService;
+import fun.lain.bilibiu.web.var.SaveTaskType;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,7 +123,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<SaveTask> taskList = saveTaskMapper.selectList(new QueryWrapper<SaveTask>()
                 .ne("status",SaveTask.Status.CREATE)
                 .ne("status",SaveTask.Status.PAUSE)
+                .ne("type",SaveTaskType.SYSTEM_TASK.getCode())
         );
+        List<SaveTask> systemTask = saveTaskMapper.selectList(new QueryWrapper<SaveTask>().eq("type", SaveTaskType.SYSTEM_TASK.getCode()));
+        taskList.addAll(systemTask);
         for(SaveTask task:taskList){
             createAndStart(task);
         }

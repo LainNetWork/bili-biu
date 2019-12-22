@@ -1,7 +1,10 @@
 package fun.lain.bilibiu.web.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import fun.lain.bilibiu.cache.entity.CachePartTask;
+import fun.lain.bilibiu.cache.entity.MediaDTO;
 import fun.lain.bilibiu.common.Echo;
-import fun.lain.bilibiu.web.entity.SaveTaskParam;
+import fun.lain.bilibiu.web.dto.SaveTaskParam;
 
 import java.util.List;
 
@@ -16,6 +19,9 @@ public interface BackApiService {
      * @return
      */
     Echo getTaskList(Integer index,Integer size);
+
+
+    IPage<MediaDTO> getMediaList(int index, int size);
 
     void start(Long taskId);
 

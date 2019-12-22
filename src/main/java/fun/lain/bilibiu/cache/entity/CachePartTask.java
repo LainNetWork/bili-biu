@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
+import java.util.Date;
+
 @Data
 @TableName("cache_part_task")
 @Builder
@@ -14,11 +16,13 @@ import lombok.*;
 @ToString
 //分段视频缓存任务
 public class CachePartTask {
-    //任务id主键
+    //id主键
     @TableId(type = IdType.AUTO)
     private Long id;
     //视频av号
     private Long avid;
+    //关联的主任务id
+    private Long taskId;
 
     private String avTitle;
     //分段号
@@ -38,4 +42,6 @@ public class CachePartTask {
     private int status;
     //状态信息
     private String message;
+
+    private Date createTime;
 }

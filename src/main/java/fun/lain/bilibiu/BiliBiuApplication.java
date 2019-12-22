@@ -1,5 +1,6 @@
 package fun.lain.bilibiu;
 
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import fun.lain.bilibiu.common.app.service.AppService;
 import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import fun.lain.bilibiu.web.service.ScheduleService;
@@ -10,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -17,10 +19,20 @@ import javax.annotation.Resource;
 import java.nio.charset.Charset;
 
 @SpringBootApplication
+@EnableTransactionManagement
 @MapperScan(basePackages = "fun.lain.**.mapper")
 @Slf4j
 public class BiliBiuApplication{
 
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+        // 设置请求的页面大于最大页后操作， true调回到首页，false 继续请求  默认false
+        // paginationInterceptor.setOverflow(false);
+        // 设置最大单页限制数量，默认 500 条，-1 不受限制
+        // paginationInterceptor.setLimit(500);
+        return paginationInterceptor;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(BiliBiuApplication.class, args);
