@@ -13,4 +13,3 @@ logging:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
-    log-impl: org.apache.ibatis.logging.log4j.Log4jImpl
