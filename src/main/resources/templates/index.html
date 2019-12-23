@@ -105,11 +105,11 @@
                                 </el-table>
                                 <el-pagination
                                         background
-                                        :pager-count="12"
-                                        @current-change="changeMediaList"
+                                        :pager-count="5"
+                                        @current-change="changeTaskList"
                                         layout="prev, pager, next"
-                                        :page-size="mediaList.size"
-                                        :total="mediaList.total">
+                                        :page-size="taskList.size"
+                                        :total="taskList.total">
                                 </el-pagination>
                             </div>
                         </el-col>
@@ -182,7 +182,7 @@
             taskList:{
                 data: [],
                 total:0,
-                index:0,
+                index:1,
                 size: 10
             },
             collectionSelect:{
@@ -289,6 +289,8 @@
                         if(res.data.code == 200){
                             this.taskList.data = res.data.data.data
                             this.taskList.total = res.data.data.total
+                            this.taskList.index = res.data.data.now
+                            this.taskList.size = res.data.data.size
                         }else{
                             this.$message({
                                 type:'error',
