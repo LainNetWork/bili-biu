@@ -103,13 +103,21 @@
                                         </template>
                                     </el-table-column>
                                 </el-table>
+                                <el-pagination
+                                        background
+                                        :pager-count="12"
+                                        @current-change="changeMediaList"
+                                        layout="prev, pager, next"
+                                        :page-size="mediaList.size"
+                                        :total="mediaList.total">
+                                </el-pagination>
                             </div>
                         </el-col>
                     </el-row>
                 </div>
             </div>
             <el-dialog :visible="showDetail">
-                ？
+                开发中，未开放
             </el-dialog>
             <div :class="showMgr">
                 <el-table :data="mediaList.data"
@@ -120,17 +128,19 @@
                         <template slot-scope="props">
                             <el-table :data="props.row.parts">
                                 <el-table-column label="cid" prop="cid" width="100"></el-table-column>
-                                <el-table-column label="分p标题" prop="title" width="700"></el-table-column>
+                                <el-table-column label="分p标题" prop="title" width="500"></el-table-column>
                                 <el-table-column label="大小" prop="size" width="100">
                                     <template slot-scope="props">
                                         {{props.row.size/(1024*1024) | sizeFilter}}MB
                                     </template>
                                 </el-table-column>
-                                <el-table-column label="下载进度" prop="cacheSize">
+                                <el-table-column label="下载进度" prop="cacheSize" width="300">
                                     <template slot-scope="props">
-                                        <el-progress :percentage="(props.row.cacheSize/props.row.size)*100"></el-progress>
+                                        <el-progress :percentage="parseInt((props.row.cacheSize/props.row.size)*100)"></el-progress>
                                     </template>
-
+                                </el-table-column>
+                                <el-table-column label="操作">
+                                    <el-button type="text" @click="reload">重新下载</el-button>
                                 </el-table-column>
                             </el-table>
                         </template>
@@ -142,6 +152,14 @@
                     </el-table-column>
                     <el-table-column prop="title" label="标题"></el-table-column>
                 </el-table>
+                <el-pagination
+                        background
+                        :pager-count="12"
+                        @current-change="changeMediaList"
+                        layout="prev, pager, next"
+                        :page-size="mediaList.size"
+                        :total="mediaList.total">
+                </el-pagination>
             </div>
         </el-col>
     </el-row>
@@ -188,6 +206,9 @@
             this.loadTaskList();
             this.getMediaList();
         },
+        mounted(){
+            setInterval(this.getMediaList, 2000);
+        },
         filters:{
             sizeFilter(value){
                 value = Number(value);
@@ -195,7 +216,17 @@
             },
         }
         ,methods:{
+            reload(){
 
+            },
+            changeTaskList(page){
+                this.taskList.index = page;
+                this.loadTaskList();
+            },
+            changeMediaList(page){
+                this.mediaList.index = page;
+                this.getMediaList();
+            },
             getMediaList(){
                 axios.get("/api/cache/mediaList",{
                     params: {
