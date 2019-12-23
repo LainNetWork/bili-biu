@@ -15,7 +15,10 @@ public class ApiController {
     @Resource
     private BackApiService backApiService;
 
-
+    @PostMapping("/cache/reLoad")
+    public void reDownload(Long cid){
+        backApiService.reload(cid);
+    }
 
     @GetMapping("/cache/mediaList")
     public Echo getMediaCacheList(Integer page,Integer size){
@@ -33,6 +36,9 @@ public class ApiController {
     public Echo getUserCollection(@RequestBody String json){
         return  backApiService.getUserCollection(json);
     }
+
+
+
 
     //保存任务,一个用户只能建立一个任务
     @PostMapping("/saveTask")
@@ -63,4 +69,6 @@ public class ApiController {
         backApiService.delete(taskId);
         return Echo.success();
     }
+
+
 }

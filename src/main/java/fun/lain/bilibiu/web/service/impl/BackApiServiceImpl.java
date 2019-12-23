@@ -2,14 +2,17 @@ package fun.lain.bilibiu.web.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
 import fun.lain.bilibiu.cache.entity.MediaDTO;
 import fun.lain.bilibiu.cache.service.CacheInfoService;
+import fun.lain.bilibiu.cache.var.CachePartTaskVar;
 import fun.lain.bilibiu.collection.entity.BiliUserInfo;
 import fun.lain.bilibiu.collection.service.ApiService;
 import fun.lain.bilibiu.common.Echo;
+import fun.lain.bilibiu.common.exception.LainException;
 import fun.lain.bilibiu.web.entity.SaveCollection;
 import fun.lain.bilibiu.web.entity.SaveTask;
 import fun.lain.bilibiu.web.dto.SaveTaskParam;
@@ -21,14 +24,17 @@ import fun.lain.bilibiu.web.service.ScheduleService;
 import fun.lain.bilibiu.web.var.SaveTaskType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.*;
 
 @Service("backApiService")
@@ -49,7 +55,8 @@ public class BackApiServiceImpl implements BackApiService {
     @Resource
     private CacheInfoService cacheInfoService;
 
-
+    @Value("${lain.save-path}")
+    private String savePath;
     @Override
     public IPage<MediaDTO> getMediaList(int index, int size){
         return cacheInfoService.getMediaList(index,size);
@@ -186,6 +193,22 @@ public class BackApiServiceImpl implements BackApiService {
     @Override
     public void delete(Long taskId) {
         scheduleService.delete(taskId);
+    }
+
+    @Override
+    public void reload(Long cid) {
+        //清除下载状态，删除文件，重新加入下载队列
+        CachePartTask task = cacheInfoService.getOne(new QueryWrapper<CachePartTask>().eq("cid",cid));
+        if(task == null){
+            throw new LainException("任务不存在！");
+        }
+        String fileDir = String.format(savePath+"/%s/%s",task.getAvid(),task.getCid());
+        File cacheFile = new File(fileDir);
+        FileUtils.deleteQuietly(cacheFile);
+        cacheInfoService.update(new UpdateWrapper<CachePartTask>().set("status", CachePartTaskVar.WAIT.getCode())
+                .set("cacheSize",0)
+                .eq("cid",cid)
+        );
     }
 
     private String getStatus(int code){

@@ -25,4 +25,6 @@ public class SaveCollection {
 
     //收藏夹id
     private Long collectionId;
+
+    private String collectionName;
 }

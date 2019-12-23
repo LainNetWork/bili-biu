@@ -207,4 +207,16 @@ public class ApiServiceImpl implements ApiService {
             throw new RuntimeException("参数错误！");
         }
     }
+
+    @Override
+    public String getTitleByCollectionId(Long collectionId) {
+        HttpEntity req = getRequestEntity(null);
+        ResponseEntity<JSONObject> res = restTemplate.exchange(ApiVar.COLLECTION_DETAIL,HttpMethod.GET,req,JSONObject.class,collectionId);
+        JSONObject data = res.getBody();
+        if(res.getStatusCode().value()!=200||data==null||data.getInteger("code")!=0){
+           return "获取标题失败QAQ";
+        }
+        String title = JSONPath.read(data.toJSONString(),"$.data.info.title").toString();
+        return title;
+    }
 }

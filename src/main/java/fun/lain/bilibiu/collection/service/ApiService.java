@@ -36,6 +36,6 @@ public interface ApiService {
      */
     MediaPart getDownloadInfo(Long id, Long cid, String cookie);
 
-
+    String getTitleByCollectionId(Long collectionId);
 
 }
