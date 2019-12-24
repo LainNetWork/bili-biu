@@ -22,7 +22,7 @@ public interface BackApiService {
 
 
 
-    IPage<MediaDTO> getMediaList(int index, int size);
+    IPage<MediaDTO> getMediaList(int index, int size,String keyword);
 
     void start(Long taskId);
 

@@ -58,8 +58,8 @@ public class BackApiServiceImpl implements BackApiService {
     @Value("${lain.save-path}")
     private String savePath;
     @Override
-    public IPage<MediaDTO> getMediaList(int index, int size){
-        return cacheInfoService.getMediaList(index,size);
+    public IPage<MediaDTO> getMediaList(int index, int size,String keyword){
+        return cacheInfoService.getMediaList(index,size,keyword);
     }
 
 
@@ -128,6 +128,7 @@ public class BackApiServiceImpl implements BackApiService {
                 break;
             default:return Echo.error("参数异常！");
         }
+        //判断用户是否已经创建过任务了
 
         JSONObject taskParam = new JSONObject();
         taskParam.put("userInfo",info);

@@ -9,7 +9,7 @@ import java.util.concurrent.*;
  */
 public class CacheTunnel {
     //线程池
-    private static final ThreadPoolExecutor exec = new ThreadPoolExecutor(5,5,0L, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(5));
+    private static final ThreadPoolExecutor exec = new ThreadPoolExecutor(5,5,0L, TimeUnit.MILLISECONDS,new ArrayBlockingQueue<Runnable>(25));
     //回调队列
     public static final LinkedBlockingQueue<Future<CachePartResult>> futureQueue = new LinkedBlockingQueue();
 

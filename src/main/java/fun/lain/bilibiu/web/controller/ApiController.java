@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/api")
@@ -15,29 +14,32 @@ public class ApiController {
     @Resource
     private BackApiService backApiService;
 
+
+
+//    @PostMapping("/user/save")
+//    public Echo saveUserInfo(String userIdentical,String identicalType,String tag)
+//    {
+//
+//        return Echo.success();
+//    }
+
+
     @PostMapping("/cache/reLoad")
-    public void reDownload(Long cid){
+    public Echo reDownload(Long cid){
         backApiService.reload(cid);
+        return Echo.success();
     }
 
     @GetMapping("/cache/mediaList")
-    public Echo getMediaCacheList(Integer page,Integer size){
-        return Echo.success().data(backApiService.getMediaList(page,size));
+    public Echo getMediaCacheList(Integer page,Integer size,String keyword){
+        return Echo.success().data(backApiService.getMediaList(page,size,keyword));
     }
-
-//    @GetMapping("/cache/mediaDetail")
-//    public Echo getMediaCacheDetail(@NotNull(message = "av号不得为空！") Long avId){
-//
-//        return Echo.success().data(backApiService.getMediaDetail(avId));
-//    }
 
     //根据cookie获取用户收藏夹
     @PostMapping("/getCollection")
     public Echo getUserCollection(@RequestBody String json){
         return  backApiService.getUserCollection(json);
     }
-
-
 
 
     //保存任务,一个用户只能建立一个任务

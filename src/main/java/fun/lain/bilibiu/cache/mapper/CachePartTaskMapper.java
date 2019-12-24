@@ -26,7 +26,7 @@ public interface CachePartTaskMapper extends BaseMapper<CachePartTask> {
     @Update("update cache_part_task set cacheSize = #{cacheSize} where id = #{taskId}")
     int updateCacheSize(@Param("taskId") long taskId,@Param("cacheSize")long cacheSize);
 
-    List<MediaDTO> getMediaList(Page page);
+    List<MediaDTO> getMediaList(Page page,@Param("keyword") String keyword);
 
     List<CachePartTask> getPartsByMediaId(long id);
 

@@ -24,7 +24,11 @@
     </insert>
 
     <select id="getMediaList" resultMap="collect">
-        select * from CACHE_PART_TASK a where a.id = (select top 1 id from CACHE_PART_TASK where avid = a.avid) order by a.id
+        select * from CACHE_PART_TASK a where a.id = (select top 1 id from CACHE_PART_TASK where avid = a.avid)
+        <if test="keyword !=null and keyword != ''">
+            AND avTitle like concat('%',concat(#{keyword},'%'))
+        </if>
+        order by a.id
     </select>
 
     <resultMap id="collect" type="fun.lain.bilibiu.cache.entity.MediaDTO">

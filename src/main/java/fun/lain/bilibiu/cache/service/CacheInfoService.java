@@ -22,6 +22,6 @@ public interface CacheInfoService extends IService<CachePartTask> {
 
     int updateCacheSize(long taskId,long cacheSize);
 
-    IPage<MediaDTO> getMediaList(int page, int size);
+    IPage<MediaDTO> getMediaList(int page, int size,String keyword);
 
 }

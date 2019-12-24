@@ -31,7 +31,6 @@ public class LainJob implements Job {
             lainTask.execute(param.toJSONString());
         } catch (Exception e) {
             log.error("任务执行异常！",e);
-            //TODO 记录日志
             e.printStackTrace();
         }
     }

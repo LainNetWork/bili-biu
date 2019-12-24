@@ -49,9 +49,9 @@ public class CacheInfoServiceImpl extends ServiceImpl<CachePartTaskMapper,CacheP
     }
 
     @Override
-    public IPage<MediaDTO> getMediaList(int index, int size) {
+    public IPage<MediaDTO> getMediaList(int index, int size,String keyword) {
         Page page = new Page<MediaDTO>(index,size);
-        List list =  baseMapper.getMediaList(page);
+        List list =  baseMapper.getMediaList(page,keyword);
         page.setRecords(list);
 //        IPage<CachePartTask> pa = baseMapper.selectPage(page,new QueryWrapper<CachePartTask>().select("avId","avTitle","id"));
         return page;

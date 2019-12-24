@@ -30,24 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component("monitorTask")
 public class MonitorTask implements LainTask {
-//    @Override
-//    public void execute(JobExecutionContext context) throws JobExecutionException {
-//        //获取需要的SpringBean
-//
-//    }
-//                    //临时测试，构建下载
-//                    List<CachePartTask> list1= cachePartTaskMapper.selectList(new QueryWrapper<CachePartTask>()
-//                            .eq("status", CachePartTaskVar.WAIT.getCode())
-//                            .last("LIMIT 5")
-//
-//                    );
-//                    list1.forEach(t->{
-//                        CacheTask cacheTask = new CacheTask(CachePartTaskParam.builder()
-//                                .taskId(t.getId())
-//                                .cookie(task.getCookie())
-//                                .build());
-//                        CacheTunnel.submit(cacheTask);
-//                    });
+
 
     @Resource
     private SaveCollectionMapper saveCollectionMapper;

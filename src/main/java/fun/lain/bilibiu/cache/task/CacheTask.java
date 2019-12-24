@@ -64,7 +64,7 @@ public class CacheTask implements Callable<CachePartResult> {
 
         long cacheSize = 0;
         if(videoFile.exists()){
-             cacheSize = cachePartTask.getCacheSize();//TODO 之后改为数据库中存储的字节数
+             cacheSize = cachePartTask.getCacheSize();
         }
         long size = cachePartTask.getSize();
 

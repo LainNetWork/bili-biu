@@ -15,12 +15,9 @@ import javax.annotation.Resource;
 @SpringBootTest
 class BiliBiuApplicationTests {
 
-    @Resource
-    CachePartTaskMapper cachePartTaskMapper;
     @Test
     void contextLoads() {
-        Page page = new Page(2,3);
-        System.out.println(cachePartTaskMapper.getMediaList(page));
+//
     }
 
 }

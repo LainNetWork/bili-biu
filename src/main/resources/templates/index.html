@@ -116,10 +116,11 @@
                     </el-row>
                 </div>
             </div>
-            <el-dialog :visible="showDetail">
+            <el-dialog :visible="showDetail" close-on-click-modal show-close="false">
                 开发中，未开放
             </el-dialog>
             <div :class="showMgr">
+                <el-input v-model="keyword" placeholder="关键字"></el-input>
                 <el-table :data="mediaList.data"
                           row-key="id"
                           border
@@ -173,6 +174,7 @@
     var app = new Vue({
         el:'#app',
         data:{
+            keyword:"",
             showDetail:false,
             radio:1,
             cookie:'',
@@ -184,7 +186,7 @@
             taskList:{
                 data: [],
                 total:0,
-                index:1,
+                index: 1,
                 size: 10
             },
             collectionSelect:{
@@ -237,11 +239,13 @@
                 this.getMediaList();
             },
             getMediaList(){
-                axios.get("/api/cache/mediaList",{
-                    params: {
+                let params = {
+                        keyword:this.keyword,
                         size:this.mediaList.size,
                         page:this.mediaList.index
                     }
+                axios.get("/api/cache/mediaList",{
+                    params:params
                 }).then(res =>{
                     if(res.data.code==500){
                         this.$message({
