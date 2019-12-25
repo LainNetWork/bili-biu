@@ -8,7 +8,7 @@ lain:
   save-path: /root/cache/lain
 logging:
   file:
-    path: @basedir@/log
+    path: ./log
   level:
     root: error
 

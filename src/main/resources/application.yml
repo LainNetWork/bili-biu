@@ -2,7 +2,7 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:h2:@basedir@/db/lain;mode=MYSQL;
+    url: jdbc:h2:./db/lain;mode=MYSQL;
     username: lain
     password: lain
     driver-class-name: org.h2.Driver
@@ -25,5 +25,4 @@ lain:
 
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: false
