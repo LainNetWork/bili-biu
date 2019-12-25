@@ -13,6 +13,7 @@ CREATE TABLE `save_collect`  (
   `id` int(11) NOT NULL  AUTO_INCREMENT COMMENT '唯一主键',
   `taskId` int(11) NULL DEFAULT NULL COMMENT '任务id',
   `collectionId` int(11) NULL DEFAULT NULL COMMENT '收藏夹id',
+  `collectionName` varchar(255) NOT NULL DEFAULT '' COMMENT '收藏夹名字',
   PRIMARY KEY (`id`),
   CONSTRAINT `save_collect_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `save_task` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
