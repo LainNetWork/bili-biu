@@ -13,7 +13,8 @@
 - 通用化任务，添加P站定时备份收藏夹模块（地球毁灭之时
 
 clone代码后，需要在IDE里安装lombok插件
-打包后执行：
+
+打包后执行(或者点[这里](https://github.com/LainNetWork/bili-biu/releases/tag/0.0.1-SNAPSHOT)下载打包好的预览版)：
 
 ``` shell
 java -jar bili-biu-0.0.1-SNAPSHOT.jar
