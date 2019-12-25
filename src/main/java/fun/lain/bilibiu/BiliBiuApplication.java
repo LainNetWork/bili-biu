@@ -45,8 +45,6 @@ public class BiliBiuApplication{
     private AppService appService;
     @Autowired
     private ScheduleService scheduleService;
-    @Resource
-    private SaveTaskMapper saveTaskMapper;
 
     @Bean
     public RestTemplate restTemplate(){
