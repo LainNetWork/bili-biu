@@ -10,7 +10,6 @@ import fun.lain.bilibiu.cache.entity.MediaDTO;
 import fun.lain.bilibiu.cache.mapper.CachePartTaskMapper;
 import fun.lain.bilibiu.cache.service.CacheInfoService;
 import fun.lain.bilibiu.cache.var.CachePartTaskVar;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
