@@ -25,7 +25,7 @@ public class CachePartFrag {
     private String url;
 
     public void down() throws Exception{
-        RandomAccessFile file = new RandomAccessFile(path,"w");
+        RandomAccessFile file = new RandomAccessFile(path,"rw");
         file.seek(start);
         URL downUrl = new URL(url);
         URLConnection connection = downUrl.openConnection();
