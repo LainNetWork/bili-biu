@@ -61,7 +61,7 @@ public class CacheTask implements Runnable {
             cacheFile.mkdirs();
         }
         String videoFilePath = String.format(fileDir + "/%s%d-%d%s", File.separator, cachePartTask.getCid(), cachePartTask.getQuality(), getSuffix(cachePartTask.getDownloadUrl()));
-        String videoFileDPCPath = String.format(fileDir + "/%s%d-%d%s", File.separator, cachePartTask.getCid(), cachePartTask.getQuality(), ".dpc");
+        String videoFileDPCPath = videoFilePath + ".dpc";
 
 
         //计算块数
@@ -99,13 +99,19 @@ public class CacheTask implements Runnable {
                 }
             }
             //创建线程池
-            ExecutorService service = new ThreadPoolExecutor(3,3,0, TimeUnit.SECONDS,new ArrayBlockingQueue<>(3));
+            ExecutorService fragExecutor = new ThreadPoolExecutor(2,2,0, TimeUnit.SECONDS,new ArrayBlockingQueue<>(1));
+            List<Future> futureList = new ArrayList<>();
             for(CachePartFrag frag:frags){
                 //构建线程，提交执行
-                //提交不上就阻塞
-
+                //提交不上就抛异常阻塞，然后等待线程执行完
+                try {
+                    Future future = fragExecutor.submit(frag);
+                    futureList.add(future);
+                }catch (RejectedExecutionException e){
+                    //等待其中一个完成，并从队列中移除
+                }
             }
-
+            fragExecutor.shutdown();
         } catch (IOException e) {
             log.error("IO错误！", e);
             //TODO 记录下载失败原因,并更新下载状态为失败

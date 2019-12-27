@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.Callable;
 
 /**
  * 分片
@@ -16,7 +17,7 @@ import java.net.URLConnection;
 @Builder
 @Data
 @AllArgsConstructor
-public class CachePartFrag {
+public class CachePartFrag implements Callable<String> {
     private int order;
     private String referer;
     private String path;
@@ -24,7 +25,9 @@ public class CachePartFrag {
     private long end;
     private String url;
 
-    public void down() throws Exception{
+
+    @Override
+    public String call() throws Exception {
         RandomAccessFile file = new RandomAccessFile(path,"rw");
         file.seek(start);
         URL downUrl = new URL(url);
@@ -42,6 +45,6 @@ public class CachePartFrag {
         }
         inputStream.close();
         file.close();
+        return "success";
     }
-
 }
