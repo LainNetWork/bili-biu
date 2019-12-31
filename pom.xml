@@ -29,6 +29,28 @@
 <!--            <artifactId>spring-boot-starter-mail</artifactId>-->
 <!--        </dependency>-->
         <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
+            <version>v3-rev20191108-1.30.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>1.23.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client-jetty</artifactId>
+            <version>1.23.0</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.google.auth</groupId>-->
+<!--            <artifactId>google-auth-library-oauth2-http</artifactId>-->
+<!--            <version>0.19.0</version>-->
+<!--        </dependency>-->
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
