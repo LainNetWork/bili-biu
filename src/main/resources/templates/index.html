@@ -30,7 +30,7 @@
                         <el-col span="8">
                             <el-divider content-position="left">用户信息</el-divider>
                             <el-row gutter="10">
-                                <el-col span="6">
+                                <el-col span="8">
                                     <el-tooltip content="使用cookie可以获得更高级别的画质~" placement="top">
                                         <el-select size="small" v-model="userInfoType">
                                             <el-option :value='0' label="用户UID"></el-option>
@@ -38,16 +38,15 @@
                                         </el-select>
                                     </el-tooltip>
                                 </el-col>
-                                <el-col span="10">
+                                <el-col span="16">
                                     <el-input v-if="userInfoType==1" size="small" v-model="userIdentical" placeholder="cookie只需要SESSDATA字段"></el-input>
                                     <el-input v-if="userInfoType==0" size="small" v-model="userIdentical" placeholder="请填入用户UID"></el-input>
                                 </el-col>
-                                <el-col span="8">
-                                    <el-button style="float: right" size="small" @click="getCollectionList" type="primary">获取收藏夹列表</el-button>
-                                </el-col>
                             </el-row>
                             <el-row>
-                                <p></p>
+                                <div style="margin-top: 10px;margin-bottom: 10px">
+                                    <el-button size="small" @click="getCollectionList" type="primary">获取收藏夹列表</el-button>
+                                </div>
                             </el-row>
                             <el-row>
                                 <span>收藏夹列表：</span>

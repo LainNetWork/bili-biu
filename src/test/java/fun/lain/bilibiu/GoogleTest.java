@@ -1,13 +1,12 @@
 package fun.lain.bilibiu;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.media.MediaHttpUploader;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
 import com.google.api.client.http.FileContent;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -18,6 +17,7 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 
+import javax.activation.FileTypeMap;
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
@@ -36,29 +36,6 @@ public class GoogleTest {
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/bili-biu-lain.json";
 
-    /**
-     * Creates an authorized Credential object.
-     * @param HTTP_TRANSPORT The network HTTP Transport.
-     * @return An authorized Credential object.
-     * @throws IOException If the credentials.json file cannot be found.
-     */
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-        // Load client secrets.
-        InputStream in = GoogleTest.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        if (in == null) {
-            throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
-        }
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                .setAccessType("offline")
-                .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-    }
 
     public static void main(String... args) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
@@ -66,16 +43,28 @@ public class GoogleTest {
 //        GoogleCredentials credential = ServiceAccountCredentials.fromStream(in);
 //        credential = credential.createScoped(SCOPES);
 
-
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, GoogleCredential.fromStream(in).createScoped(SCOPES))
                 .setApplicationName(APPLICATION_NAME)
+//                .setHttpRequestInitializer(request -> {
+//                    request.setConnectTimeout(0);
+//                    request.setReadTimeout(0);
+////                    request.setIOExceptionHandler((request1, supportsRetry) -> {
+////                        System.out.println(request.getUrl());
+////                        return true;
+////                    });
+//                })
                 .build();
 
         // Print the names and IDs for up to 10 files.
+//        FileList result = service.files().list()
+//                .setPageSize(10)
+//                .setFields("nextPageToken, files(id, name)")
+//                .execute();
         FileList result = service.files().list()
-                .setPageSize(10)
-                .setFields("nextPageToken, files(id, name)")
+                .setQ("mimeType = 'application/vnd.google-apps.folder' and name='bili-back'")
+//                .setPageSize(10)
+//                .setFields("nextPageToken, files(id, name)")
                 .execute();
         List<File> files = result.getFiles();
         if (files == null || files.isEmpty()) {
@@ -84,20 +73,57 @@ public class GoogleTest {
             System.out.println("Files:");
             for (File file : files) {
                 System.out.printf("%s (%s)\n", file.getName(), file.getId());
+
             }
         }
         File file = new File();
-        file.setName("1.png");
-        file.setMimeType("image/png");
-//        file.setParents(Arrays.asList("bili-back"));
-        java.io.File filePath = new java.io.File("D:/1.png");
-        FileContent fileContent = new FileContent("image/png",filePath);
-        service.files().create(file,fileContent).setFields("id").execute();
+        file.setName("Windows.iso");
+
+        file.setParents(Arrays.asList("14SZbxWR0Y8jf8QhsT2thCKsq6cU9FRIC"));
+
+        java.io.File filePath = new java.io.File("D:/Windows.iso");
+        FileContent fileContent = new FileContent("",filePath);
+
+        Drive.Files.Create str = service.files().create(file,fileContent).setFields("id");
+
+
+        MediaHttpUploader uploader = str.getMediaHttpUploader();
+        uploader.setProgressListener(new UploadListener());
+        uploader.setDirectUploadEnabled(false);
+
+
+        try {
+            str.execute();
+        }catch (Exception e){
+            System.out.println("上传过程异常！开始重试："+e.getMessage());
+
+        }
         System.out.println("FileId:"+file.getId());
 
-        service.files().get("1m7iHROmtSj2q8wxM01jU9o80mp1dc9vZ")
+        System.out.println(service.files().get("14SZbxWR0Y8jf8QhsT2thCKsq6cU9FRIC"));
+    }
 
-                .executeMediaAndDownloadTo(new FileOutputStream("D:/lain.flv"));
 
+}
+class UploadListener implements MediaHttpUploaderProgressListener {
+
+    @Override
+    public void progressChanged(MediaHttpUploader uploader) throws IOException {
+        switch (uploader.getUploadState()) {
+            case INITIATION_STARTED:
+                System.out.println("Initiation Started");
+                break;
+            case INITIATION_COMPLETE:
+                System.out.println("Initiation Completed");
+                break;
+            case MEDIA_IN_PROGRESS:
+                System.out.println("Upload in progress");
+                System.out.println(uploader.getChunkSize());
+                System.out.println("Upload percentage: " + uploader.getProgress());
+                break;
+            case MEDIA_COMPLETE:
+                System.out.println("Upload Completed!");
+                break;
+        }
     }
 }
