@@ -1,6 +1,5 @@
 package fun.lain.bilibiu.cache.task;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import fun.lain.bilibiu.cache.entity.CachePartTask;
@@ -14,11 +13,15 @@ import fun.lain.bilibiu.web.mapper.SaveTaskMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import fun.lain.bilibiu.cache.task.frag.CacheTask;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 将任务提交至下载队列
+ */
 @Component("cachePushTask")
 public class CachePushTask implements LainTask{
     @Autowired

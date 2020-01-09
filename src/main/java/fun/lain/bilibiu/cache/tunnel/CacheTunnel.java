@@ -1,6 +1,5 @@
 package fun.lain.bilibiu.cache.tunnel;
 
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
 
@@ -15,5 +14,8 @@ public class CacheTunnel {
 
     public static Future<CachePartResult> submit(Callable<CachePartResult> callable){
         return exec.submit(callable);
+    }
+    public static Future submit(Runnable runnable){
+        return exec.submit(runnable);
     }
 }

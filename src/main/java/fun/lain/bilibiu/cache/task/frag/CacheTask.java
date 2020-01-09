@@ -31,8 +31,9 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class CacheTask implements Runnable {
-    private final int block = 4 * 1024 * 1024;
+    private final int block = 3 * 1024 * 1024;
     private static final String BASE_URL = "https://www.bilibili.com/video/av";
+    public static final String DPC_FILE_EXTENSION = ".dpc";
     private CachePartTaskParam cachePartTaskParam;
     private ApiService apiService;
     private CacheInfoService cacheInfoService;
@@ -61,7 +62,7 @@ public class CacheTask implements Runnable {
             cacheFile.mkdirs();
         }
         String videoFilePath = String.format(fileDir + "/%s%d-%d%s", File.separator, cachePartTask.getCid(), cachePartTask.getQuality(), getSuffix(cachePartTask.getDownloadUrl()));
-        String videoFileDPCPath = videoFilePath + ".dpc";
+        String videoFileDPCPath = videoFilePath + DPC_FILE_EXTENSION;
 
 
         //计算块数
@@ -77,44 +78,48 @@ public class CacheTask implements Runnable {
                 videoFileDPCFile.write(new byte[(int) fragNum + 1]);
             }
 
-            int cachedBlockNum = 0;
             List<CachePartFrag> frags = new ArrayList<>();
+            //创建回调
+            CacheFragCallBack callBack = CacheFragCallBack.builder()
+                    .cacheInfoService(cacheInfoService)
+                    .taskId(cachePartTaskParam.getTaskId())
+                    .build();
             if (fragNum == 0) {
                 frags.add(CachePartFrag.builder().start(0).end(endFrag).order(0).path(videoFilePath)
                         .url(cachePartTask.getDownloadUrl())
+                        .cacheFragCallBack(callBack)
                         .referer(BASE_URL + cachePartTask.getAvid())
                         .build());
             } else {
                 for (int i = 0; i < fragNum; i++) {
                     videoFileDPCFile.seek(i);
                     byte b = videoFileDPCFile.readByte();
-                    if (b == 0) {
+                    if (b == 0) {//如果当前块没有被缓存过，则加入任务列表
                         frags.add(CachePartFrag.builder().start(i * block).end((i + 1) * block).order(i).path(videoFilePath)
                                 .url(cachePartTask.getDownloadUrl())
+                                .cacheFragCallBack(callBack)
                                 .referer(BASE_URL + cachePartTask.getAvid())
                                 .build());
-                    }else{
-                        cachedBlockNum++;
                     }
+                }
+                if(endFrag!=0){
+                    frags.add(CachePartFrag.builder().start(fragNum * block).end(fragNum * block + endFrag).order((int)fragNum).path(videoFilePath)
+                            .url(cachePartTask.getDownloadUrl())
+                            .cacheFragCallBack(callBack)
+                            .referer(BASE_URL + cachePartTask.getAvid())
+                            .build());
                 }
             }
             //创建线程池
-            ExecutorService fragExecutor = new ThreadPoolExecutor(2,2,0, TimeUnit.SECONDS,new ArrayBlockingQueue<>(1));
-            List<Future> futureList = new ArrayList<>();
+            ExecutorService fragExecutor = new ThreadPoolExecutor(2,2,1, TimeUnit.SECONDS,new ArrayBlockingQueue<>(1),new FragRejectedExecutionHandler());
             for(CachePartFrag frag:frags){
-                //构建线程，提交执行
-                //提交不上就抛异常阻塞，然后等待线程执行完
-                try {
-                    Future future = fragExecutor.submit(frag);
-                    futureList.add(future);
-                }catch (RejectedExecutionException e){
-                    //等待其中一个完成，并从队列中移除
-                }
+                //提交不上就阻塞，然后等待线程执行完
+                fragExecutor.submit(frag);
             }
+            //等待所有线程完成（按照现有机制，由于出错，分片下载不完整的视频会被重新拉进下载队列，因此即使在本次任务中没有下载完，总是会下载完成的
             fragExecutor.shutdown();
         } catch (IOException e) {
             log.error("IO错误！", e);
-            //TODO 记录下载失败原因,并更新下载状态为失败
             return;
         }
 

@@ -4,5 +4,3 @@ server:
 logging:
   file:
     path: ./log
-  level:
-    root: error
