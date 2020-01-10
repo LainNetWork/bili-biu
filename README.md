@@ -1,12 +1,13 @@
 ### BILI-BIU B站收藏夹视频定时备份工具
 一个部署在服务器上的监控BiliBili收藏夹并自动下载备份视频的工具，自带一个webUI
+
 使用Java语言，基于SpringBoot框架开发。
 #### 功能：
 
 - 定时监控指定收藏夹，并自动下载保存视频（已完成）
 - WEB UI(简陋版)
 - WEB UI 登录验证(目前还是初版，暂时没加)
-- 单视频多线程下载（开发中
+- 单视频多线程分片下载（已完成
 - 命令行模式（未开发
 - 弹幕备份（未开发
 - 定时备份上传谷歌云盘（遥远的未来
@@ -14,7 +15,7 @@
 
 clone代码后，需要在IDE里安装lombok插件
 
-打包后执行(或者点[这里](https://github.com/LainNetWork/bili-biu/releases/tag/0.0.1-SNAPSHOT)下载打包好的预览版)：
+通过maven打包后执行(或者点[这里(可能不是最新的版本)](https://github.com/LainNetWork/bili-biu/releases/tag/0.0.1-SNAPSHOT)下载打包好的预览版)：
 
 ``` shell
 java -jar bili-biu-0.0.1-SNAPSHOT.jar
