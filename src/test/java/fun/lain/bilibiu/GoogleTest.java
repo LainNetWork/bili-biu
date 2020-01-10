@@ -1,5 +1,6 @@
 package fun.lain.bilibiu;
 
+import com.google.api.client.googleapis.GoogleUtils;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.batch.BatchRequest;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
@@ -11,6 +12,7 @@ import com.google.api.client.http.FileContent;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -21,10 +23,13 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.User;
+import org.apache.http.HttpHost;
 
 
 import javax.activation.FileTypeMap;
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,12 +54,20 @@ public class GoogleTest {
 //        GoogleCredentials credential = ServiceAccountCredentials.fromStream(in);
 //        credential = credential.createScoped(SCOPES);
 
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, GoogleCredential.fromStream(in).createScoped(SCOPES))
+//        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+
+        Proxy proxy = new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1",1080));
+//        HttpHost httpHost = new HttpHost("127.0.0.1",1080);
+        NetHttpTransport net = new NetHttpTransport.Builder()
+                .setProxy(proxy)
+                .trustCertificates(GoogleUtils.getCertificateTrustStore())
+                .build();
+        Drive service = new Drive.Builder(net, JSON_FACTORY, GoogleCredential.fromStream(in).createScoped(SCOPES))
                 .setApplicationName(APPLICATION_NAME)
 //                .setHttpRequestInitializer(request -> {
 //                    request.setConnectTimeout(0);
 //                    request.setReadTimeout(0);
+//
 ////                    request.setIOExceptionHandler((request1, supportsRetry) -> {
 ////                        System.out.println(request.getUrl());
 ////                        return true;
@@ -64,18 +77,18 @@ public class GoogleTest {
 
 //        com.google.api.services.drive.model.Drive drive = service.drives().list().execute().getDrives().get(0);
 
-        JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
-
-            @Override
-            public void onSuccess(Permission permission, HttpHeaders responseHeaders) throws IOException {
-                System.out.println(permission);
-            }
-
-            @Override
-            public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) throws IOException {
-                System.out.println(e);
-            }
-        };
+//        JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
+////
+////            @Override
+////            public void onSuccess(Permission permission, HttpHeaders responseHeaders) throws IOException {
+////                System.out.println(permission);
+////            }
+////
+////            @Override
+////            public void onFailure(GoogleJsonError e, HttpHeaders responseHeaders) throws IOException {
+////                System.out.println(e);
+////            }
+////        };
 
         File folder = new File();
         folder.setName("Test Lain 5");
