@@ -60,11 +60,11 @@
             <version>1.30.7</version>
         </dependency>
 <!--引入Shiro-->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-spring-boot-starter</artifactId>
-            <version>1.4.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.shiro</groupId>-->
+<!--            <artifactId>shiro-spring-boot-starter</artifactId>-->
+<!--            <version>1.4.0</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
