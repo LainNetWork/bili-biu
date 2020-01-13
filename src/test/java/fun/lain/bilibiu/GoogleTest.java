@@ -8,10 +8,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
-import com.google.api.client.http.FileContent;
-import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.*;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -23,6 +20,9 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.google.api.services.drive.model.User;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.http.HttpTransportFactory;
+import com.google.auth.oauth2.GoogleCredentials;
 import org.apache.http.HttpHost;
 
 
@@ -58,11 +58,16 @@ public class GoogleTest {
 
         Proxy proxy = new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1",1080));
 //        HttpHost httpHost = new HttpHost("127.0.0.1",1080);
-        NetHttpTransport net = new NetHttpTransport.Builder()
+        final NetHttpTransport net = new NetHttpTransport.Builder()
                 .setProxy(proxy)
                 .trustCertificates(GoogleUtils.getCertificateTrustStore())
                 .build();
-        Drive service = new Drive.Builder(net, JSON_FACTORY, GoogleCredential.fromStream(in).createScoped(SCOPES))
+        GoogleCredentials credentials = GoogleCredentials.fromStream(in, ()->net);
+        credentials = credentials.createScoped(SCOPES);
+        HttpRequestInitializer initializer = new HttpCredentialsAdapter(credentials);
+
+        Drive service = new Drive.Builder(net, JSON_FACTORY,initializer)
+
                 .setApplicationName(APPLICATION_NAME)
 //                .setHttpRequestInitializer(request -> {
 //                    request.setConnectTimeout(0);
