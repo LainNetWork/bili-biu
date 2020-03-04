@@ -56,14 +56,13 @@ public class GoogleTest {
 
 //        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-        Proxy proxy = new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1",1080));
+        Proxy proxy = new Proxy(Proxy.Type.SOCKS,new InetSocketAddress("127.0.0.1",1080));
 //        HttpHost httpHost = new HttpHost("127.0.0.1",1080);
         final NetHttpTransport net = new NetHttpTransport.Builder()
                 .setProxy(proxy)
                 .trustCertificates(GoogleUtils.getCertificateTrustStore())
                 .build();
-        GoogleCredentials credentials = GoogleCredentials.fromStream(in, ()->net);
-        credentials = credentials.createScoped(SCOPES);
+        GoogleCredentials credentials = GoogleCredentials.fromStream(in, ()->net).createScoped(SCOPES);
         HttpRequestInitializer initializer = new HttpCredentialsAdapter(credentials);
 
         Drive service = new Drive.Builder(net, JSON_FACTORY,initializer)
@@ -95,21 +94,25 @@ public class GoogleTest {
 ////            }
 ////        };
 
-        File folder = new File();
-        folder.setName("Test Lain 5");
-
-        folder.setParents(Arrays.asList("0AFL0ULMuFuA2Uk9PVA"));
-        folder.setMimeType("application/vnd.google-apps.folder");
-
-        service.files()
-                .create(folder)
-                .setSupportsAllDrives(true)
-//                .setFields("id")
-                .execute();
+//        File folder = new File();
+//        folder.setName("Test Lain 5");
+//
+//        folder.setParents(Arrays.asList("0AFL0ULMuFuA2Uk9PVA"));
+//        folder.setMimeType("application/vnd.google-apps.folder");
+//
+//        service.files()
+//                .create(folder)
+//                .setSupportsAllDrives(true)
+////                .setFields("id")
+//                .execute();
 
         // Print the names and IDs for up to 10 files.
 
         FileList result = service.files().list()
+                .setDriveId("0AFL0ULMuFuA2Uk9PVA")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
+                .setCorpora("drive")
 //                .setQ("mimeType = 'application/vnd.google-apps.folder'")// and name='bili-back'
 
 //                .setPageSize(10)

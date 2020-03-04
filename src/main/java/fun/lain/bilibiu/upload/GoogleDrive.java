@@ -1,17 +1,20 @@
 package fun.lain.bilibiu.upload;
 
 import com.google.api.services.drive.Drive;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
-import java.io.InputStream;
 
 /**
  * 谷歌服务封装
  */
-@Data
-@AllArgsConstructor
-public class GoogleDrive {
+public interface GoogleDrive {
+    /**
+     * 获取谷歌云服务
+     * @return
+     */
+    Drive getDriveService();
+
+    String createFolder(Drive driveService,String folderName,String parent);
+
 
 
 }
