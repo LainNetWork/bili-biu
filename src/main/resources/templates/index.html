@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <div th:replace="header"/>
+    <link rel="stylesheet" href="/common/css/main.css">
 </head>
 <body>
 <div id="app" style="height: 100%">
@@ -119,7 +120,7 @@
                 开发中，未开放
             </el-dialog>
             <div :class="showMgr">
-                <el-input v-model="keyword" placeholder="关键字"></el-input>
+                <el-input v-model="keyword" class="search-box" placeholder="关键字"></el-input>
                 <el-table :data="mediaList.data"
                           row-key="id"
                           border
@@ -149,7 +150,7 @@
                     </el-table-column>
                     <el-table-column prop="id" label="av号" width="200px">
                         <template slot-scope="props">
-                            av{{props.row.id}}
+                            <el-link href="https://www.bilibili.com/video/av{{props.row.id}}">av{{props.row.id}}</el-link>
                         </template>
                     </el-table-column>
                     <el-table-column prop="title" label="标题"></el-table-column>
