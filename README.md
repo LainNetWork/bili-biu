@@ -2,10 +2,11 @@
 ### BILI-BIU B站收藏夹视频定时备份工具
 一个部署在服务器上的监控BiliBili收藏夹并自动下载备份视频的工具，自带一个webUI
 初版长这样：
-![Snipaste_2020-04-22_01-55-15.png](https://i.loli.net/2020/04/22/5u9ZDRhF8EszGat.png)
+
+![截图](https://i.loli.net/2020/04/22/5u9ZDRhF8EszGat.png)
 
 下载页面，带进度条：
-![Snipaste_2020-04-22_01-54-48.png](https://i.loli.net/2020/04/22/Xh9f1p7aFYzTukr.png)
+![截图](https://i.loli.net/2020/04/22/Xh9f1p7aFYzTukr.png)
 
 使用Java语言，基于SpringBoot框架开发。
 #### 功能：
